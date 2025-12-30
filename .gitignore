@@ -38,3 +38,4 @@ Thumbs.db
 
 # --- 개인용 ---
 .continue/
+*.code-workspace
