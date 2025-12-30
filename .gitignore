@@ -35,3 +35,6 @@ Thumbs.db
 # --- Database ---
 *.sqlite3
 *.db
+
+# --- 개인용 ---
+.continue/
