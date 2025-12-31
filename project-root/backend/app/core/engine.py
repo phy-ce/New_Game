@@ -3,8 +3,8 @@ from typing import List, Dict, Any, Tuple
 import random
 
 # 외부 모듈 참조 (앞서 만든 파일들)
-from app.core.card import CARD_DB, ActionCard, TreasureCard
-from app.core.deck import DeckManager
+from .card import CARD_DB, ActionCard, TreasureCard
+from .deck import DeckManager
 
 # ──────────────────────────────────────────────────────────────
 # 1️⃣ 게임 단계 정의
@@ -40,7 +40,9 @@ class GameState:
                 "actions": 1,    # 남은 액션 횟수
                 "buys": 1,       # 남은 구매 횟수
                 "gold": 0,       # 이번 턴에 발생한 구매력
-                "victory_points": 3 # 초기 사유지 3장의 점수
+                "victory_points": 3, # 초기 사유지 3장의 점수
+                "hp" : 20,
+                "mana": 10
             } for pid in player_ids
         }
 
@@ -58,7 +60,12 @@ class Engine:
             pid: DeckManager(self.state.players[pid]) 
             for pid in self.state.player_ids
         }
-
+    # 플레이어 상대방 ID 반환
+    def get_opponent_id(self, player_id: str) -> str:
+        """현재 플레이어를 제외한 상대방의 ID를 반환합니다."""
+        # player_ids 리스트에서 현재 player_id가 아닌 첫 번째 요소를 찾음
+        return [pid for pid in self.state.player_ids if pid != player_id][0]
+    
     # [초기화] 게임 시작 세팅
     def setup_game(self) -> None:
         """모든 플레이어의 초기 덱을 설정하고 5장을 드로우합니다."""
@@ -86,9 +93,13 @@ class Engine:
         # 2. 카드 타입별 개별 검증 및 페이즈 전환
         if isinstance(card, ActionCard):
             if self.state.phase != Phase.ACTION:
-                return False, "액션 페이즈가 아닙니다."
+                msg = "액션 페이즈가 아닙니다."
+                self.state.logs.append(f"❌ {player_id}: {msg}") # 로그 추가
+                return False, msg
             if player["actions"] <= 0:
-                return False, "사용 가능한 액션 횟수가 없습니다."
+                msg = "사용 가능한 액션 횟수가 없습니다."
+                self.state.logs.append(f"❌ {player_id}: {msg}") # 로그 추가
+                return False, msg
             player["actions"] -= 1
 
         elif isinstance(card, TreasureCard):
@@ -102,13 +113,15 @@ class Engine:
 
         # 3. 카드 이동 및 효과 실행
         player["hand"].remove(card_name)
+
+        self.state.logs.append(f"✨ {player_id}님이 {card_name} 카드를 사용했습니다.")
         # 다형성 활용: ActionCard.play() 또는 TreasureCard.play() 자동 실행
         card.play(self, player_id) 
         
         # 사용한 카드는 버림패로 (도미니언은 필드에 두지만 구현 편의상 버림패로 바로 이동)
         self.deck_managers[player_id].add_to_discard(card_name)
         
-        self.state.logs.append(f"✨ {player_id}님이 {card_name} 카드를 사용했습니다.")
+
         return True, "성공"
 
     # [구매] 카드 구매 로직
@@ -180,3 +193,22 @@ class Engine:
         actual_drawn = self.deck_managers[player_id].draw(count)
         if actual_drawn > 0:
             self.state.logs.append(f"🎴 {player_id}님이 {actual_drawn}장의 카드를 뽑았습니다.")
+
+    def apply_hp_change(self, target_id: str, amount: int):
+        target = self.state.players[target_id]
+        
+        # 소문자 hp에 연산 적용
+        target["hp"] += amount 
+        
+        action_type = "회복" if amount > 0 else "자해"
+        self.state.logs.append(f"🩸 {target_id}가 {abs(amount)}만큼 {action_type}했습니다. (남은 hp: {target['hp']})")
+
+        if target["hp"] <= 0:
+            self.state.is_game_over = True
+            winner_id = self.get_opponent_id(target_id)
+            self.state.winner = winner_id
+            self.state.logs.append(f"💀 {target_id}가 사망했습니다! 승자: {winner_id}")
+
+    def apply_damage(self, opponent_id: str, damage: int):
+        """상대방에게 공격을 가함 (apply_hp_change의 래퍼 함수)"""
+        self.apply_hp_change(opponent_id, -damage)

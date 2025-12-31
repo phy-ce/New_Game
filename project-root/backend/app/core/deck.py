@@ -51,3 +51,5 @@ class DeckManager:
         starting_cards = ["Copper"] * 7 + ["Estate"] * 3
         random.shuffle(starting_cards)
         self.state["deck"] = starting_cards
+
+        
