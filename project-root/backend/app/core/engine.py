@@ -19,10 +19,13 @@ class Phase(Enum):
 # 2️⃣ 전체 게임 상태 객체 (순수 데이터)
 # ──────────────────────────────────────────────────────────────
 class GameState:
-    def __init__(self, player_ids: List[str]):
+    def __init__(self, player_ids: List[str], debug: bool = False):
         self.player_ids = player_ids
         self.phase: Phase = Phase.ACTION
         self.turn_owner: str = player_ids[0]
+        self.debug: bool = debug
+        self.turn_count = 1  # 현재 게임의 총 턴 수
+
 
         # 중앙 공급처 수량
         self.supply: Dict[str, int] = {
@@ -177,27 +180,36 @@ class Engine:
             self._end_turn()
             self.state.phase = Phase.ACTION
 
-    # [턴 종료] 내부 정리 로직
+# [턴 종료] 내부 정리 로직
     def _end_turn(self) -> None:
         pid = self.state.turn_owner
-        manager = self.deck_managers[pid]
-
-        # 1. 정리(Clean-up): 손패 다 버리고 5장 새로 뽑기
-        manager.discard_hand()
-        manager.draw(5)
-
-        # 2. 자원 초기화
         player = self.state.players[pid]
+        
+        # 1. 정리 시작 알림 (선택 사항)
+        self.debug_log(f"🧹 {pid}님의 턴 종료 정리(Clean-up)를 시작합니다.", is_debug=True)
+        
+        # 2. 실제 정리 수행 (순서 중요: 데이터 먼저 변경)
+        self.deck_managers[pid].discard_hand()
+        self.deck_managers[pid].draw(5)
         player["actions"] = 1
         player["buys"] = 1
         player["gold"] = 0
-
-        # 3. 턴 주인 교체
+        
+        # 3. [수정] 정리가 완료된 '후'의 스냅샷을 찍어야 다음 턴 준비 완료를 확인 가능
+        self.print_player_snapshot(pid)
+        
+        # 4. 턴 주인 교체 및 페이즈 초기화
         pids = self.state.player_ids
         current_idx = pids.index(pid)
-        self.state.turn_owner = pids[(current_idx + 1) % len(pids)]
+        next_idx = (current_idx + 1) % len(pids)
         
-        self.state.logs.append(f"턴 종료. 이제 {self.state.turn_owner}의 턴입니다.")
+        if next_idx == 0:
+            self.state.turn_count += 1
+            
+        self.state.turn_owner = pids[next_idx]
+        self.state.phase = Phase.ACTION  # 다음 사람을 위해 액션 페이즈로 명시적 리셋
+
+        self.state.logs.append(f"=== 턴 {self.state.turn_count}: {self.state.turn_owner}의 차례 ===")
 
     # [드로우] 로그 출력을 포함한 드로우 대행 (카드 효과 등에서 호출)
     def draw_card(self, player_id: str, count: int = 1) -> None:
@@ -223,3 +235,25 @@ class Engine:
     def apply_damage(self, opponent_id: str, damage: int):
         """상대방에게 공격을 가함 (apply_hp_change의 래퍼 함수)"""
         self.apply_hp_change(opponent_id, -damage)
+    
+    def debug_log(self, message: str, is_debug: bool = False):
+        """로그를 추가하는 내부 메서드. 개발자 모드일 때만 상세 로그를 남깁니다."""
+        if is_debug and not self.state.debug:
+            return  # 디버그 로그인데 개발자 모드가 아니면 무시
+        self.state.logs.append(message)
+    
+    def print_player_snapshot(self, player_id: str):
+        """[DEBUG] 플레이어의 모든 카드 위치를 상세히 기록합니다."""
+        p = self.state.players[player_id]
+        
+        msg = (
+            f"\n--- 🛠 [SNAPSHOT] {player_id} ---\n"
+            f"HP: {p['hp']} | Mana: {p['mana']} | Gold: {p['gold']}\n"
+            f"Hand({len(p['hand'])}): {p['hand']}\n"
+            f"Deck({len(p['deck'])}): {p['deck']}\n"
+            f"Discard({len(p['discard'])}): {p['discard']}\n"
+            f"Actions: {p['actions']} | Buys: {p['buys']}\n"
+            f"----------------------------"
+        )
+        self.debug_log(msg, is_debug=True)
+
