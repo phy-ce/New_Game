@@ -154,6 +154,17 @@ class Engine:
             player["victory_points"] += getattr(card, 'points', 0)
 
         return True, "구매 성공"
+    
+
+    def apply_stat_change(self, player_id: str, stat_name: str, amount: int):
+        if amount == 0: return
+        self.state.players[player_id][stat_name] += amount
+        
+        # 로그 기록 (선택 사항)
+        icons = {"buys": "🛒", "actions": "⚡", "gold": "💰", "mana": "🔮"}
+        icon = icons.get(stat_name, "✨")
+        self.state.logs.append(f"{icon} {player_id}님의 {stat_name}이(가) {amount}만큼 변화했습니다. (현재: {self.state.players[player_id][stat_name]})")
+
 
     # [페이즈] 다음 단계로 전환
     def next_phase(self) -> None:

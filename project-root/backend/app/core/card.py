@@ -32,9 +32,9 @@ class ActionCard(Card):
     def play(self, engine, player_id: str):
         player = engine.state.players[player_id]
 
-        player["actions"] += self.add_actions
-        player["buys"] += self.add_buys
-        player["gold"] += self.add_gold
+        engine.apply_stat_change(player_id, "actions", self.add_actions)
+        engine.apply_stat_change(player_id, "buys", self.add_buys)
+        engine.apply_stat_change(player_id, "gold", self.add_gold)
         player["mana"] += self.add_mana
 
         #   체력 조정
@@ -68,14 +68,28 @@ class VictoryCard(Card):
 
 # --- 카드 데이터베이스 ---
 CARD_DB: Dict[str, Card] = {
-    "Copper": TreasureCard("Copper", 0, 1),
+    "Copper": TreasureCard("Copper", cost=0, value=1),
     "Silver": TreasureCard("Silver", 3, 2),
     "Gold": TreasureCard("Gold", 6, 3),
-    "Estate": VictoryCard("Estate", 2, 1),
+    "Estate": VictoryCard("Estate", cost=2, points=1),
     "Duchy": VictoryCard("Duchy", 5, 3),
     "Province": VictoryCard("Province", 8, 6),
-    "Village": ActionCard("Village", 3, add_cards=1, add_actions=2),
-    "Smithy": ActionCard("Smithy", 4, add_cards=3),
+
+
+    "Market": ActionCard("Market", 5,
+        add_cards=1, 
+        add_actions=1, 
+        add_buys=1, 
+        add_gold=1
+    ),
+    "Village": ActionCard("Village", 3,
+        add_cards=1,
+        add_actions=2
+    ),
+    "Smithy": ActionCard("Smithy", 4,
+        add_cards=3
+    ),
+
 
     # 내 피 10을 깎고 카드 3장을 뽑는 '혈액 순환'
     "BloodDraw": ActionCard("BloodDraw", 3, add_cards=3, add_hp=-10),
