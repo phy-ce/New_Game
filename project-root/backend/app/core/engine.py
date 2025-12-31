@@ -40,7 +40,9 @@ class GameState:
                 "actions": 1,    # 남은 액션 횟수
                 "buys": 1,       # 남은 구매 횟수
                 "gold": 0,       # 이번 턴에 발생한 구매력
-                "victory_points": 3 # 초기 사유지 3장의 점수
+                "victory_points": 3, # 초기 사유지 3장의 점수
+                "HP" : 20,
+                "Mana": 10
             } for pid in player_ids
         }
 
