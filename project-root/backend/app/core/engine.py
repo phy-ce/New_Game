@@ -41,8 +41,8 @@ class GameState:
                 "buys": 1,       # 남은 구매 횟수
                 "gold": 0,       # 이번 턴에 발생한 구매력
                 "victory_points": 3, # 초기 사유지 3장의 점수
-                "HP" : 20,
-                "Mana": 10
+                "hp" : 20,
+                "mana": 10
             } for pid in player_ids
         }
 
@@ -182,3 +182,22 @@ class Engine:
         actual_drawn = self.deck_managers[player_id].draw(count)
         if actual_drawn > 0:
             self.state.logs.append(f"🎴 {player_id}님이 {actual_drawn}장의 카드를 뽑았습니다.")
+
+    def apply_hp_change(self, target_id: str, amount: int):
+        target = self.state.players[target_id]
+        
+        # 소문자 hp에 연산 적용
+        target["hp"] += amount 
+        
+        action_type = "회복" if amount > 0 else "자해"
+        self.state.logs.append(f"🩸 {target_id}가 {abs(amount)}만큼 {action_type}했습니다. (남은 hp: {target['hp']})")
+
+        if target["hp"] <= 0:
+            self.state.is_game_over = True
+            winner_id = self.get_opponent_id(target_id)
+            self.state.winner = winner_id
+            self.state.logs.append(f"💀 {target_id}가 사망했습니다! 승자: {winner_id}")
+
+    def apply_damage(self, opponent_id: str, damage: int):
+        """상대방에게 공격을 가함 (apply_hp_change의 래퍼 함수)"""
+        self.apply_hp_change(opponent_id, -damage)

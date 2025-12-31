@@ -1,49 +1,81 @@
-# test_run.py
-from backend.app.core.engine import GameState, Engine, Phase
+import sys
+import os
 
-def test_game():
+# 프로젝트 루트 경로를 추가하여 backend.app... 임포트가 가능하게 설정
+sys.path.append(os.getcwd())
+
+from backend.app.core.engine import GameState, Engine
+from backend.app.core.card import CARD_DB
+
+def run_actual_card_test():
+    print("🚀 [실제 CARD_DB 연동 테스트] 시작\n")
+    
     # 1. 초기화
     player_ids = ["User_A", "User_B"]
     state = GameState(player_ids)
+    
+    # GameState에 누락되었을 수 있는 종료 플래그 수동 추가 (엔진 로직용)
+    state.is_game_over = False
+    state.winner = None
+    
     engine = Engine(state)
-
-    print("--- 1단계: 게임 셋업 ---")
     engine.setup_game()
     
-    # 플레이어 A의 상태 확인
-    a_hand = state.players["User_A"]["hand"]
-    print(f"User_A의 첫 핸드: {a_hand}")
+    # 테스트를 위해 HP 초기화 (GameState의 'hp' 키 사용)
+    state.players["User_A"]["hp"] = 30
+    state.players["User_B"]["hp"] = 30
 
-    print("\n--- 2단계: 카드 사용 테스트 (액션) ---")
-    # 강제로 핸드에 'Smithy' 한 장을 넣어줍니다 (테스트용)
-    state.players["User_A"]["hand"].append("Smithy")
-    
-    # Smithy 사용 (대장장이는 +3 드로우 효과가 있어야 함)
-    success, msg = engine.play_card("User_A", "Smithy")
-    print(f"Smithy 사용 결과: {success}, {msg}")
-    print(f"User_A의 현재 핸드 개수: {len(state.players['User_A']['hand'])}장")
-    print(f"남은 액션 포인트: {state.players['User_A']['actions']}")
+    # ────────────────────────────────────────────────────────────
+    # 시나리오 1: BloodDraw 테스트 (내 피 -10, 카드 +3)
+    # ────────────────────────────────────────────────────────────
+    print("--- [테스트 1] User_A: 'BloodDraw' 사용 ---")
+    if "BloodDraw" in CARD_DB:
+        state.players["User_A"]["hand"].append("BloodDraw")
+        hand_before = len(state.players["User_A"]["hand"])
+        
+        success, msg = engine.play_card("User_A", "BloodDraw")
+        
+        print(f"결과: {success} | hp: {state.players['User_A']['hp']} (예상 20)")
+        print(f"핸드 변화: {hand_before} -> {len(state.players['User_A']['hand'])} (3장 추가 드로우 확인)")
+    else:
+        print("❌ 오류: CARD_DB에 'BloodDraw'가 없습니다.")
 
-    print("\n--- 3단계: 페이즈 전환 및 구매 테스트 ---")
-    engine.next_phase() # BUY 페이즈로 이동
-    print(f"현재 페이즈: {state.phase}")
+    # ────────────────────────────────────────────────────────────
+    # 시나리오 2: BloodArrow 테스트 (내 피 -5, 상대 HP -15)
+    # ────────────────────────────────────────────────────────────
+    print("\n--- [테스트 2] User_A: 'BloodArrow' 사용 ---")
+    if "BloodArrow" in CARD_DB:
+        state.players["User_A"]["hand"].append("BloodArrow")
+        
+        engine.play_card("User_A", "BloodArrow")
+        
+        print(f"User_A hp: {state.players['User_A']['hp']} (예상 15)")
+        print(f"User_B hp: {state.players['User_B']['hp']} (예상 15)")
+    else:
+        print("❌ 오류: CARD_DB에 'BloodArrow'가 없습니다.")
 
-    # 강제로 돈 10원 주기
-    state.players["User_A"]["gold"] = 10
-    
-    # 'Province' (8원) 구매 시도
-    success, msg = engine.buy_card("User_A", "Province")
-    print(f"Province 구매 결과: {success}, {msg}")
-    print(f"상점의 Province 남은 수량: {state.supply['Province']}")
+    # ────────────────────────────────────────────────────────────
+    # 시나리오 3: 사망 판정 테스트 (User_A 자해 사망)
+    # ────────────────────────────────────────────────────────────
+    print("\n--- [테스트 3] User_A: 'Madness' 사용으로 자해 사망 (hp -20) ---")
+    if "Madness" in CARD_DB:
+        state.players["User_A"]["hand"].append("Madness")
+        
+        # 현재 A의 피는 15이므로 Madness(-20) 사용 시 사망해야 함
+        engine.play_card("User_A", "Madness")
+        
+        print(f"User_1 hp: {state.players['User_A']['hp']} (예상 -5)")
+        print(f"게임 종료: {state.is_game_over}")
+        print(f"승자: {state.winner} (예상 User_B)")
+    else:
+        print("❌ 오류: CARD_DB에 'Madness'가 없습니다.")
 
-    print("\n--- 4단계: 턴 종료 및 교체 ---")
-    engine.next_phase() # CLEAN_UP 및 턴 교체
-    print(f"새로운 턴 주인: {state.turn_owner}")
-    print(f"User_A의 버림패 상황: {state.players['User_A']['discard']}")
-
-    print("\n--- 전체 로그 확인 ---")
-    for log in state.logs:
-        print(f"[LOG] {log}")
+    # ────────────────────────────────────────────────────────────
+    # 최종 로그 출력
+    # ────────────────────────────────────────────────────────────
+    print("\n--- 📜 최종 게임 로그 ---")
+    for log in state.logs[-5:]:
+        print(f"> {log}")
 
 if __name__ == "__main__":
-    test_game()
+    run_actual_card_test()

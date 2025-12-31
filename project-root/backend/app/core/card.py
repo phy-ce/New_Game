@@ -17,18 +17,33 @@ class Card(ABC):
 
 # --- 액션 카드 ---
 class ActionCard(Card):
-    def __init__(self, name: str, cost: int, add_cards=0, add_actions=0, add_buys=0, add_gold=0):
+    def __init__(self, name: str, cost: int, add_cards=0, add_actions=0, add_buys=0,
+                  add_HP=0, add_Mana=0, add_gold=0, op_add_HP=0, op_add_Mana=0):
         super().__init__(name, cost, "ACTION")
         self.add_cards = add_cards
         self.add_actions = add_actions
         self.add_buys = add_buys
         self.add_gold = add_gold
+        self.add_HP = add_HP
+        self.add_Mana = add_Mana
+        self.op_add_HP = op_add_HP
+        self.op_add_Mana = op_add_Mana
 
     def play(self, engine, player_id: str):
         player = engine.state.players[player_id]
+
         player["actions"] += self.add_actions
         player["buys"] += self.add_buys
         player["gold"] += self.add_gold
+        player["mana"] += self.add_Mana
+
+        #   체력 조정
+
+        if self.add_HP != 0:
+            # 엔진의 메서드를 호출하여 죽음 판정까지 같이 처리
+            engine.apply_hp_change(player_id, self.add_HP)
+
+        #   드로우
         if self.add_cards > 0:
             engine.draw_card(player_id, self.add_cards)
 
@@ -61,4 +76,16 @@ CARD_DB: Dict[str, Card] = {
     "Province": VictoryCard("Province", 8, 6),
     "Village": ActionCard("Village", 3, add_cards=1, add_actions=2),
     "Smithy": ActionCard("Smithy", 4, add_cards=3),
+
+    # 내 피 10을 깎고 카드 3장을 뽑는 '혈액 순환'
+    "BloodDraw": ActionCard("BloodDraw", 3, add_cards=3, add_HP=-10),
+    
+    # 내 피 5를 깎고 상대에게 15 데미지를 주는 '피의 화살'
+    "BloodArrow": ActionCard("BloodArrow", 2, op_add_HP=-15, add_HP=-5),
+    
+    # 내 피 20을 깎는 대신 액션을 3개나 더 얻는 '광기'
+    "Madness": ActionCard("Madness", 4, add_actions=3, add_HP=-20),
+    
+    # 반대로 피를 채우는 '치유'
+    "HolyLight": ActionCard("HolyLight", 2, add_HP=15)
 }
