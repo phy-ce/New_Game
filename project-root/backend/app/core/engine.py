@@ -3,8 +3,8 @@ from typing import List, Dict, Any, Tuple
 import random
 
 # 외부 모듈 참조 (앞서 만든 파일들)
-from app.core.card import CARD_DB, ActionCard, TreasureCard
-from app.core.deck import DeckManager
+from .card import CARD_DB, ActionCard, TreasureCard
+from .deck import DeckManager
 
 # ──────────────────────────────────────────────────────────────
 # 1️⃣ 게임 단계 정의
