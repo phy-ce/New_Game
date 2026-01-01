@@ -32,9 +32,9 @@ class ActionCard(Card):
     def play(self, engine, player_id: str):
         player = engine.state.players[player_id]
 
-        engine.apply_stat_change(player_id, "actions", self.add_actions)
-        engine.apply_stat_change(player_id, "buys", self.add_buys)
-        engine.apply_stat_change(player_id, "gold", self.add_gold)
+        engine._apply_stat_change(player_id, "actions", self.add_actions)
+        engine._apply_stat_change(player_id, "buys", self.add_buys)
+        engine._apply_stat_change(player_id, "gold", self.add_gold)
         player["mana"] += self.add_mana
 
         #   체력 조정
@@ -95,11 +95,31 @@ CARD_DB: Dict[str, Card] = {
     "BloodDraw": ActionCard("BloodDraw", 3, add_cards=3, add_hp=-10),
     
     # 내 피 5를 깎고 상대에게 15 데미지를 주는 '피의 화살'
-    "BloodArrow": ActionCard("BloodArrow", 2, op_add_hp=-15, add_hp=-5),
+    "BloodArrow": ActionCard("BloodArrow", 5, op_add_hp=-15, add_hp=-5),
     
     # 내 피 20을 깎는 대신 액션을 3개나 더 얻는 '광기'
     "Madness": ActionCard("Madness", 4, add_actions=3, add_hp=-20),
 
     # 반대로 피를 채우는 '치유'
     "HolyLight": ActionCard("HolyLight", 2, add_hp=15)
+}
+
+# --- 클래스 데이터베이스 ---
+
+CLASS_DB = {
+    "Warrior": {
+        "hp": 40, "gold": 0, "actions": 1, 
+        "initial_deck": ["Copper"] * 7 + ["Estate"] * 3,
+        "private_market": {"BloodArrow": 5}  # 전사 전용 공격 카드
+    },
+    "Mage": {
+        "hp": 25, "gold": 0, "actions": 1,
+        "initial_deck": ["Copper"] * 6 + ["Estate"] * 3 + ["Madness"] * 3,
+        "private_market": {"BloodDraw": 3, "ManaPotion": 5} # 마법사 전용 드로우/마나 카드
+    },
+    "Priest": {
+        "hp": 30, "gold": 2, "actions": 1,
+        "initial_deck": ["Copper"] * 7 + ["HolyLight"] * 3,
+        "private_market": {"HolyLight": 10} # 사제는 힐 카드가 마켓에 많음
+    }
 }

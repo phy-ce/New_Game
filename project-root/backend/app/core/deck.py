@@ -46,6 +46,14 @@ class DeckManager:
         """구매하거나 획득한 카드를 버림패에 추가합니다."""
         self.state["discard"].append(card_name)
 
+    def add_to_play_mat(self, card_name: str) -> None:
+        """플레이매트에 카드를 추가합니다."""
+        self.state["play_mat"].append(card_name)
+
+    def discard_pile(self, cards: List[str]) -> None:
+        """여러 장의 카드(핸드나 매트 전체)를 한꺼번에 버림패로 이동"""
+        self.state["discard"].extend(cards)
+
     def initialize_deck(self) -> None:
         """게임 시작 시 구리 7장, 사유지 3장으로 초기 덱 구성"""
         starting_cards = ["Copper"] * 7 + ["Estate"] * 3
