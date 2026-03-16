@@ -1,1 +1,0 @@
-// 프론트엔드 전역 상태 (Zustand/Context API)
