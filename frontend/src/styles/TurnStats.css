@@ -1,0 +1,41 @@
+.turn-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+}
+
+.ts-turn {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.ts-indicator {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #7af;
+  padding: 4px 12px;
+  border: 1px solid #4a6a9a;
+  border-radius: 4px;
+  background: rgba(70, 100, 160, 0.15);
+}
+
+.ts-resources {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ts-res {
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: #2a2a3a;
+}
+
+.ts-gold { color: #fc0; }
+.ts-actions { color: #8cf; }
+.ts-buys { color: #8f8; }
+.ts-played { color: #ccc; }

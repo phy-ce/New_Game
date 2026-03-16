@@ -1,0 +1,142 @@
+.lobby-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+}
+
+.lobby-page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.lobby-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lobby-menu button {
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border: 2px solid #4a4a8a;
+  background: #2a2a4a;
+  color: #eee;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.lobby-menu button:hover {
+  background: #3a3a6a;
+}
+
+.lobby-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.lobby-form h2 {
+  margin-bottom: 0.5rem;
+}
+
+.lobby-form input {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #4a4a8a;
+  background: #2a2a4a;
+  color: #eee;
+  border-radius: 6px;
+  width: 220px;
+  text-align: center;
+}
+
+.lobby-form input::placeholder {
+  color: #888;
+}
+
+.lobby-form button {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border: 2px solid #4a4a8a;
+  background: #2a2a4a;
+  color: #eee;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.lobby-form button:hover {
+  background: #3a3a6a;
+}
+
+.btn-back {
+  background: transparent !important;
+  border-color: #666 !important;
+  color: #888 !important;
+  font-size: 0.9rem !important;
+}
+
+.lobby-waiting, .lobby-ready {
+  text-align: center;
+}
+
+.lobby-code {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+}
+
+.lobby-code strong {
+  font-family: monospace;
+  letter-spacing: 0.2em;
+  color: #7af;
+}
+
+.waiting-text {
+  color: #888;
+  font-style: italic;
+}
+
+.player-list {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.player-name {
+  padding: 0.5rem 1rem;
+  background: #2a2a4a;
+  border: 1px solid #4a4a8a;
+  border-radius: 6px;
+}
+
+.btn-start {
+  padding: 0.8rem 2.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border: 2px solid #4a8a4a;
+  background: #2a4a2a;
+  color: #eee;
+  border-radius: 6px;
+  margin-top: 1rem;
+  transition: background 0.2s;
+}
+
+.btn-start:hover {
+  background: #3a6a3a;
+}
+
+.error-msg {
+  color: #f66;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 0, 0, 0.1);
+  border-radius: 4px;
+}

@@ -1,0 +1,54 @@
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: #222244;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.player-opponent {
+  background: #2a2233;
+}
+
+.pi-name {
+  font-weight: bold;
+  color: #fff;
+  min-width: 80px;
+}
+
+.pi-hp-bar {
+  position: relative;
+  width: 120px;
+  height: 20px;
+  background: #333;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.pi-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c44, #4c4);
+  transition: width 0.3s;
+}
+
+.pi-hp-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+.pi-stat {
+  color: #999;
+  font-size: 0.75rem;
+}

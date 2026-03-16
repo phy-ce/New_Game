@@ -1,0 +1,142 @@
+.card {
+  position: relative;
+  width: 90px;
+  height: 130px;
+  border: 2px solid #555;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px;
+  font-size: 0.7rem;
+  cursor: default;
+  user-select: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+
+.card-action {
+  background: #2a3a5a;
+  border-color: #4a6a9a;
+}
+
+.card-treasure {
+  background: #3a3a2a;
+  border-color: #8a8a4a;
+}
+
+.card.playable {
+  cursor: pointer;
+  border-color: #6c6;
+  box-shadow: 0 0 8px rgba(100, 200, 100, 0.4);
+}
+
+.card.playable:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 4px 16px rgba(100, 200, 100, 0.5);
+}
+
+.card-back {
+  background: linear-gradient(135deg, #3a2a5a, #2a1a4a);
+  border-color: #6a4a9a;
+}
+
+.card-back::after {
+  content: '?';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1.8rem;
+  color: #8a6aba;
+}
+
+.card-cost {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #c90;
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-image-placeholder {
+  width: 50px;
+  height: 40px;
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #aaa;
+}
+
+.card-name {
+  font-weight: bold;
+  margin-top: 4px;
+  font-size: 0.65rem;
+  text-align: center;
+  color: #ddd;
+}
+
+.card-effect {
+  font-size: 0.55rem;
+  color: #aaa;
+  text-align: center;
+  margin-top: 2px;
+  line-height: 1.2;
+  padding: 0 2px;
+}
+
+/* Inspector tooltip */
+.card-inspector {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  width: 160px;
+  padding: 10px;
+  background: #1a1a2e;
+  border: 2px solid #6a6aaa;
+  border-radius: 8px;
+  z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.inspector-name {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.inspector-type {
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: capitalize;
+  margin-bottom: 6px;
+}
+
+.inspector-cost {
+  font-size: 0.75rem;
+  color: #cc0;
+  margin-bottom: 4px;
+}
+
+.inspector-effect {
+  font-size: 0.75rem;
+  color: #aaa;
+  line-height: 1.3;
+}

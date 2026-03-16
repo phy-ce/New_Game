@@ -1,0 +1,20 @@
+.hand {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 8px;
+  flex-wrap: wrap;
+}
+
+.hand-opponent {
+  gap: 4px;
+}
+
+.hand-opponent .card {
+  width: 50px;
+  height: 72px;
+}
+
+.hand-opponent .card::after {
+  font-size: 1.2rem;
+}
