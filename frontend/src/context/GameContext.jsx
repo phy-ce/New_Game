@@ -12,6 +12,13 @@ export function GameProvider({ children }) {
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState(null);
   const [lobbyPlayers, setLobbyPlayers] = useState(null);
+  const [cardTemplates, setCardTemplates] = useState({});
+
+  useEffect(() => {
+    fetch('/api/card-templates')
+      .then(r => r.json())
+      .then(setCardTemplates);
+  }, []);
 
   // Persist to localStorage so refresh can reconnect
   useEffect(() => {
@@ -52,6 +59,7 @@ export function GameProvider({ children }) {
     gameState, setGameState,
     error, setError,
     lobbyPlayers, setLobbyPlayers,
+    cardTemplates,
     resetToLobby,
   };
 

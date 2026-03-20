@@ -8,7 +8,7 @@ games = {}
 def generate_code():
     """Generate a unique 6-char alphanumeric lobby code."""
     while True:
-        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        code = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
         if code not in games:
             return code
 
@@ -25,7 +25,7 @@ def create_game(player_name, sid):
         "log": [],
         "market": {},
         "turn_state": {
-            "actions": 0,
+            "energy": 0,
             "buys": 0,
             "gold": 0,
             "cards_played": 0,
@@ -38,6 +38,7 @@ def create_game(player_name, sid):
                 "name": player_name,
                 "hp": 30,
                 "max_hp": 30,
+                "max_energy": 3,
                 "hand": [],
                 "deck": [],
                 "discard": [],
@@ -59,15 +60,17 @@ def join_game(code, player_name, sid):
     # Prevent duplicate names
     if game["players"][0]["name"] == player_name:
         return False, "Name already taken"
-    game["players"].append({
-        "sid": sid,
-        "name": player_name,
-        "hp": 30,
-        "max_hp": 30,
-        "hand": [],
-        "deck": [],
-        "discard": [],
-    })
+    game["players"].append(
+        {
+            "sid": sid,
+            "name": player_name,
+            "hp": 30,
+            "max_hp": 30,
+            "hand": [],
+            "deck": [],
+            "discard": [],
+        }
+    )
     return True, None
 
 

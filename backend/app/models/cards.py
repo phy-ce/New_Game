@@ -79,12 +79,23 @@ MARKET_SUPPLY = {
 }
 
 
+_CLIENT_FIELDS = {"name", "cost", "type", "effect", "image"}
+
+
+def get_client_templates():
+    """Return card templates with only the fields safe to send to the client."""
+    return {
+        name: {k: v for k, v in template.items() if k in _CLIENT_FIELDS}
+        for name, template in CARD_TEMPLATES.items()
+    }
+
+
 def create_card(template_name):
-    """Create a card instance from a template name, with a unique ID."""
-    template = CARD_TEMPLATES[template_name]
-    card = dict(template)
-    card["id"] = str(uuid.uuid4())[:8]
-    return card
+    """Create a card instance (just a reference + unique ID)."""
+    return {
+        "id": str(uuid.uuid4())[:8],
+        "name": template_name,
+    }
 
 
 def create_starter_deck():

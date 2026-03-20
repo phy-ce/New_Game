@@ -1,5 +1,10 @@
 import random
-from app.models.cards import create_starter_deck, create_market, create_card
+from app.models.cards import (
+    CARD_TEMPLATES,
+    create_starter_deck,
+    create_market,
+    create_card,
+)
 
 HAND_SIZE = 5
 
@@ -19,7 +24,7 @@ def _draw_cards(player, count):
 def _reset_turn_state(game):
     """Reset turn state for a new turn."""
     game["turn_state"] = {
-        "actions": 1,
+        "energy": 3,
         "buys": 1,
         "gold": 0,
         "cards_played": 0,
@@ -66,7 +71,7 @@ def play_card(game, player_index, card_id):
         return False, "Card not in hand"
 
     # Action cards cost an action to play
-    if card["type"] == "action":
+    if CARD_TEMPLATES[card["name"]]["type"] == "action":
         if turn["actions"] <= 0:
             player["hand"].append(card)  # Put it back
             return False, "No actions remaining"
@@ -81,7 +86,9 @@ def play_card(game, player_index, card_id):
     # Card goes to discard after being played
     player["discard"].append(card)
 
-    game["log"].append(f"{player['name']} plays {card['name']} ({card['effect']})")
+    game["log"].append(
+        f"{player['name']} plays {card['name']} ({CARD_TEMPLATES[card['name']]['effect']})"
+    )
     return True, None
 
 

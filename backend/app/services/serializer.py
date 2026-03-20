@@ -16,28 +16,29 @@ def serialize_for_player(game, player_index):
         "turn": game["turn"],
         "is_my_turn": game["current_player"] == player_index,
         "winner": game.get("winner"),
-        "winner_name": game["players"][game["winner"]]["name"] if game.get("winner") is not None else None,
+        "winner_name": (
+            game["players"][game["winner"]]["name"]
+            if game.get("winner") is not None
+            else None
+        ),
         "log": game["log"][-50:],  # Last 50 log entries
-
-        "market": game["market"],
-
+        "market": {name: {"count": pile["count"]} for name, pile in game["market"].items()},
         "turn_state": game["turn_state"],
-
         "pending_choice": game["pending_choice"],
-
         "me": {
             "name": me["name"],
             "hp": me["hp"],
             "max_hp": me["max_hp"],
+            "max_energy": me["max_energy"],
             "hand": me["hand"],
             "deck_count": len(me["deck"]),
             "discard_count": len(me["discard"]),
         },
-
         "opponent": {
             "name": opp["name"],
             "hp": opp["hp"],
             "max_hp": opp["max_hp"],
+            "max_energy": opp["max_energy"],
             "hand_count": len(opp["hand"]),
             "deck_count": len(opp["deck"]),
             "discard_count": len(opp["discard"]),

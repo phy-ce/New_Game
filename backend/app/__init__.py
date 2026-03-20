@@ -1,5 +1,5 @@
 import os
-from flask import Flask, send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_socketio import SocketIO
 
 socketio = SocketIO()
@@ -9,6 +9,11 @@ def create_app():
     static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../frontend/dist'))
     app = Flask(__name__, static_folder=static_dir, static_url_path='')
     app.config['SECRET_KEY'] = 'dev-secret-key'
+
+    @app.route('/api/card-templates')
+    def card_templates():
+        from app.models.cards import get_client_templates
+        return jsonify(get_client_templates())
 
     @app.route('/')
     def index():

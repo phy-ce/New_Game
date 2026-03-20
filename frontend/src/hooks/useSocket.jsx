@@ -28,7 +28,10 @@ export function SocketProvider({ children }) {
       setLobbyPlayers(data.players);
     });
 
+    let gotDirectState = false;
+
     socket.on('game_state', (state) => {
+      gotDirectState = true;
       setGameState(state);
       setError(null);
     });
@@ -36,6 +39,10 @@ export function SocketProvider({ children }) {
     // Fallback: if we get a room-level notification but didn't receive
     // our per-SID game_state (stale SID), re-request it via reconnect
     socket.on('state_updated', (data) => {
+      if (gotDirectState) {
+        gotDirectState = false;
+        return;
+      }
       const savedName = localStorage.getItem('playerName');
       if (data.lobby_code && savedName) {
         socket.emit('reconnect_game', {
