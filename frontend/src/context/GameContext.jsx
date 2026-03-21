@@ -13,11 +13,11 @@ export function GameProvider({ children }) {
   const [error, setError] = useState(null);
   const [lobbyPlayers, setLobbyPlayers] = useState(null);
   const [cardTemplates, setCardTemplates] = useState({});
+  const [unitTemplates, setUnitTemplates] = useState({});
 
   useEffect(() => {
-    fetch('/api/card-templates')
-      .then(r => r.json())
-      .then(setCardTemplates);
+    fetch('/api/card-templates').then(r => r.json()).then(setCardTemplates);
+    fetch('/api/unit-templates').then(r => r.json()).then(setUnitTemplates);
   }, []);
 
   // Persist to localStorage so refresh can reconnect
@@ -60,6 +60,7 @@ export function GameProvider({ children }) {
     error, setError,
     lobbyPlayers, setLobbyPlayers,
     cardTemplates,
+    unitTemplates,
     resetToLobby,
   };
 

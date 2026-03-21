@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import '../styles/Card.css';
 
-export default function Card({ card, onClick, isPlayable, faceDown }) {
+export default function Card({ card, onClick, isPlayable, faceDown, isNew }) {
   const [showInspector, setShowInspector] = useState(false);
   const { cardTemplates } = useGame();
 
@@ -15,12 +15,12 @@ export default function Card({ card, onClick, isPlayable, faceDown }) {
 
   return (
     <div
-      className={`card ${typeClass} ${isPlayable ? 'playable' : ''}`}
+      className={`card ${typeClass} ${isPlayable ? 'playable' : ''} ${isNew ? 'card-entering' : ''}`}
       onClick={isPlayable ? () => onClick(card.id) : undefined}
       onMouseEnter={() => setShowInspector(true)}
       onMouseLeave={() => setShowInspector(false)}
     >
-      <div className="card-cost">{template.cost}</div>
+      <div className="card-cost">{template.energy_cost}</div>
       <div className="card-image-placeholder">
         {card.name.charAt(0)}
       </div>
@@ -31,7 +31,7 @@ export default function Card({ card, onClick, isPlayable, faceDown }) {
         <div className="card-inspector">
           <div className="inspector-name">{card.name}</div>
           <div className="inspector-type">{template.type}</div>
-          <div className="inspector-cost">Cost: {template.cost}</div>
+          <div className="inspector-cost">Buy cost: {template.cost} ◈ · Play cost: {template.energy_cost} ◆</div>
           <div className="inspector-effect">{template.effect}</div>
         </div>
       )}

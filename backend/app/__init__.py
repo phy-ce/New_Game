@@ -15,6 +15,11 @@ def create_app():
         from app.models.cards import get_client_templates
         return jsonify(get_client_templates())
 
+    @app.route('/api/unit-templates')
+    def unit_templates():
+        from app.models.units import get_client_templates
+        return jsonify(get_client_templates())
+
     @app.route('/')
     def index():
         return send_from_directory(app.static_folder, 'index.html')

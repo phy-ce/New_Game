@@ -6,36 +6,50 @@
   font-family: system-ui, sans-serif;
 }
 
+.turn-info {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ddd;
+  z-index: 10;
+  background: rgba(26, 26, 46, 0.9);
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #3a3a6a;
+}
+
 .game-main {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
-/* Opponent at top */
 .opponent-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 8px;
   gap: 4px;
-  border-bottom: 1px solid #2a2a4a;
+  flex-shrink: 0;
 }
 
-/* Center area */
-.center-section {
+.battle-field {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  overflow-y: auto;
-  padding: 8px;
+  overflow: hidden;
 }
 
-/* Player at bottom */
+.field-divider {
+  height: 2px;
+  background: #2a2a4a;
+  margin: 0 12px;
+}
+
 .player-section {
   display: flex;
   flex-direction: column;
@@ -43,6 +57,7 @@
   padding: 8px;
   gap: 6px;
   border-top: 1px solid #2a2a4a;
+  flex-shrink: 0;
 }
 
 .player-controls {
@@ -52,6 +67,72 @@
   width: 100%;
   justify-content: center;
 }
+
+.hand-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.hand-row > :first-child {
+  margin-right: auto;
+}
+
+.hand-row > :last-child {
+  margin-left: auto;
+}
+
+.left-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  border-right: 1px solid #2a2a4a;
+  flex-shrink: 0;
+  order: -1;
+}
+
+.right-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  border-left: 1px solid #2a2a4a;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.sidebar-played {
+  flex-shrink: 0;
+  padding: 8px;
+  margin-top: auto;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.sidebar-log {
+  margin-top: 8px;
+  height: 50vh;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #2a2a4a;
+}
+
+/* Resource bar */
+.resource-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.rb-res {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.rb-energy { color: #7af; }
+.rb-gold   { color: #e8a020; }
+.rb-buys   { color: #9d9; }
 
 .btn-end-turn {
   padding: 8px 24px;

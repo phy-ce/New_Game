@@ -13,6 +13,22 @@ def generate_code():
             return code
 
 
+def _make_player(name, sid):
+    return {
+        "sid": sid,
+        "name": name,
+        "hp": 30,
+        "max_hp": 30,
+        "energy": 0,
+        "max_energy": 3,
+        "gold": 0,
+        "hand": [],
+        "deck": [],
+        "discard": [],
+        "field": [],
+    }
+
+
 def create_game(player_name, sid):
     """Create a new game with one player. Returns the lobby code."""
     code = generate_code()
@@ -25,25 +41,12 @@ def create_game(player_name, sid):
         "log": [],
         "market": {},
         "turn_state": {
-            "energy": 0,
             "buys": 0,
-            "gold": 0,
             "cards_played": 0,
             "last_played": None,
         },
         "pending_choice": None,
-        "players": [
-            {
-                "sid": sid,
-                "name": player_name,
-                "hp": 30,
-                "max_hp": 30,
-                "max_energy": 3,
-                "hand": [],
-                "deck": [],
-                "discard": [],
-            }
-        ],
+        "players": [_make_player(player_name, sid)],
     }
     return code
 
@@ -57,20 +60,9 @@ def join_game(code, player_name, sid):
         return False, "Game already started"
     if len(game["players"]) >= 2:
         return False, "Game is full"
-    # Prevent duplicate names
     if game["players"][0]["name"] == player_name:
         return False, "Name already taken"
-    game["players"].append(
-        {
-            "sid": sid,
-            "name": player_name,
-            "hp": 30,
-            "max_hp": 30,
-            "hand": [],
-            "deck": [],
-            "discard": [],
-        }
-    )
+    game["players"].append(_make_player(player_name, sid))
     return True, None
 
 

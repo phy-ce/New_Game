@@ -1,68 +1,79 @@
 import random
 import uuid
+from app.services.effects import gain_gold, gain_energy, draw, do_damage, gain_buys, summon
 
-# Dummy card templates - placeholder data for MVP.
-# Each card has a name, cost, and an effect description.
-# Real card effects will be implemented later in game_logic.py.
 CARD_TEMPLATES = {
     "Copper": {
         "name": "Copper",
         "cost": 0,
+        "energy_cost": 0,
         "type": "treasure",
         "effect": "+1 Gold",
-        "gold_value": 1,
         "image": "copper.png",
+        "effects": [gain_gold(1)],
     },
     "Silver": {
         "name": "Silver",
         "cost": 3,
+        "energy_cost": 0,
         "type": "treasure",
         "effect": "+2 Gold",
-        "gold_value": 2,
         "image": "silver.png",
+        "effects": [gain_gold(2)],
     },
     "Gold": {
         "name": "Gold",
         "cost": 6,
+        "energy_cost": 0,
         "type": "treasure",
         "effect": "+3 Gold",
-        "gold_value": 3,
         "image": "gold.png",
+        "effects": [gain_gold(3)],
     },
     "Village": {
         "name": "Village",
         "cost": 3,
+        "energy_cost": 1,
         "type": "action",
-        "effect": "+1 Card, +2 Actions",
+        "effect": "+1 Card, +1 Energy",
         "image": "village.png",
+        "effects": [draw(1), gain_energy(1)],
     },
     "Smithy": {
         "name": "Smithy",
         "cost": 4,
+        "energy_cost": 1,
         "type": "action",
         "effect": "+3 Cards",
         "image": "smithy.png",
+        "effects": [draw(3)],
     },
     "Militia": {
         "name": "Militia",
         "cost": 4,
+        "energy_cost": 1,
         "type": "action",
         "effect": "+2 Gold, opponent -2 HP",
         "image": "militia.png",
+        "effects": [gain_gold(2), do_damage(2)],
     },
     "Market": {
         "name": "Market",
         "cost": 5,
+        "energy_cost": 1,
         "type": "action",
-        "effect": "+1 Card, +1 Action, +1 Buy, +1 Gold",
+        "effect": "+1 Card, +1 Energy, +1 Buy, +1 Gold",
         "image": "market.png",
+        "effects": [draw(1), gain_energy(1), gain_buys(1), gain_gold(1)],
     },
-    "Witch": {
-        "name": "Witch",
-        "cost": 5,
+    "Summon": {
+        "name": "Summon Minion",
+        "cost": 3,
+        "energy_cost": 2,
         "type": "action",
-        "effect": "+2 Cards, opponent -3 HP",
+        "effect": "summons a minion",
         "image": "witch.png",
+        "effects": [summon("Goblin")],
     },
 }
 
@@ -75,11 +86,11 @@ MARKET_SUPPLY = {
     "Smithy": 10,
     "Militia": 10,
     "Market": 10,
-    "Witch": 10,
+    "Summon": 10,
 }
 
 
-_CLIENT_FIELDS = {"name", "cost", "type", "effect", "image"}
+_CLIENT_FIELDS = {"name", "cost", "energy_cost", "type", "effect", "image"}
 
 
 def get_client_templates():
@@ -114,8 +125,5 @@ def create_market():
     """Create the shared market supply."""
     market = {}
     for name, count in MARKET_SUPPLY.items():
-        market[name] = {
-            "template": dict(CARD_TEMPLATES[name]),
-            "count": count,
-        }
+        market[name] = {"count": count}
     return market

@@ -5,31 +5,48 @@ from app.models.cards import (
     create_market,
     create_card,
 )
-
+from app.models.units import UNIT_TEMPLATES
 HAND_SIZE = 5
 
 
 def _draw_cards(player, count):
-    """Draw cards from deck into hand. Reshuffles discard if deck is empty."""
     for _ in range(count):
         if not player["deck"]:
             if not player["discard"]:
-                break  # No cards left anywhere
+                break
             player["deck"] = player["discard"]
             player["discard"] = []
             random.shuffle(player["deck"])
         player["hand"].append(player["deck"].pop())
 
 
-def _reset_turn_state(game):
-    """Reset turn state for a new turn."""
+def _begin_phase(game, player_index):
+    """Start of a player's turn: reset resources."""
+    player = game["players"][player_index]
+    player["energy"] = player["max_energy"]
+    player["gold"] = 0
     game["turn_state"] = {
-        "energy": 3,
         "buys": 1,
-        "gold": 0,
         "cards_played": 0,
-        "last_played": None,
+        "played_this_turn": [],
     }
+
+
+def _end_phase(game, player_index):
+    """End of a player's turn: units attack, discard hand, draw next hand."""
+    player = game["players"][player_index]
+    opponent = game["players"][1 - player_index]
+
+    for unit in player["field"]:
+        template = UNIT_TEMPLATES[unit["name"]]
+        opponent["hp"] -= template["attack"]
+        game["log"].append(f"{unit['name']} attacks for {template['attack']}")
+        if template.get("effect"):
+            template["effect"](game, player_index)
+
+    player["discard"].extend(player["hand"])
+    player["hand"] = []
+    _draw_cards(player, HAND_SIZE)
 
 
 def start_game(game):
@@ -41,13 +58,15 @@ def start_game(game):
     game["pending_choice"] = None
     game["log"] = ["Game started!"]
 
-    for player in game["players"]:
+    for i, player in enumerate(game["players"]):
         player["deck"] = create_starter_deck()
         player["hand"] = []
         player["discard"] = []
+        player["energy"] = player["max_energy"]
+        player["gold"] = 0
         _draw_cards(player, HAND_SIZE)
 
-    _reset_turn_state(game)
+    _begin_phase(game, 0)
     game["log"].append(f"{game['players'][0]['name']}'s turn.")
 
 
@@ -70,18 +89,17 @@ def play_card(game, player_index, card_id):
     if card is None:
         return False, "Card not in hand"
 
-    # Action cards cost an action to play
-    if CARD_TEMPLATES[card["name"]]["type"] == "action":
-        if turn["actions"] <= 0:
-            player["hand"].append(card)  # Put it back
-            return False, "No actions remaining"
-        turn["actions"] -= 1
+    energy_cost = CARD_TEMPLATES[card["name"]]["energy_cost"]
+    if player["energy"] < energy_cost:
+        player["hand"].append(card)  # Put it back
+        return False, "Not enough energy"
+    player["energy"] -= energy_cost
 
     # Apply card effects (placeholder MVP logic)
     _apply_card_effect(game, player_index, card)
 
     turn["cards_played"] += 1
-    turn["last_played"] = card
+    turn["played_this_turn"].insert(0, card)
 
     # Card goes to discard after being played
     player["discard"].append(card)
@@ -93,35 +111,8 @@ def play_card(game, player_index, card_id):
 
 
 def _apply_card_effect(game, player_index, card):
-    """Apply a card's effect. Placeholder MVP implementations."""
-    player = game["players"][player_index]
-    opponent = game["players"][1 - player_index]
-    turn = game["turn_state"]
-
-    name = card["name"]
-
-    if name == "Copper":
-        turn["gold"] += 1
-    elif name == "Silver":
-        turn["gold"] += 2
-    elif name == "Gold":
-        turn["gold"] += 3
-    elif name == "Village":
-        _draw_cards(player, 1)
-        turn["actions"] += 2
-    elif name == "Smithy":
-        _draw_cards(player, 3)
-    elif name == "Militia":
-        turn["gold"] += 2
-        opponent["hp"] -= 2
-    elif name == "Market":
-        _draw_cards(player, 1)
-        turn["actions"] += 1
-        turn["buys"] += 1
-        turn["gold"] += 1
-    elif name == "Witch":
-        _draw_cards(player, 2)
-        opponent["hp"] -= 3
+    for fn in CARD_TEMPLATES[card["name"]].get("effects", []):
+        fn(game, player_index)
 
 
 def buy_card(game, player_index, card_name):
@@ -143,16 +134,14 @@ def buy_card(game, player_index, card_name):
     if pile["count"] <= 0:
         return False, "Card is sold out"
 
-    cost = pile["template"]["cost"]
-    if turn["gold"] < cost:
-        return False, f"Not enough gold (need {cost}, have {turn['gold']})"
+    cost = CARD_TEMPLATES[card_name]["cost"]
+    if player["gold"] < cost:
+        return False, f"Not enough gold (need {cost}, have {player['gold']})"
 
-    # Deduct cost and buy
-    turn["gold"] -= cost
+    player["gold"] -= cost
     turn["buys"] -= 1
     pile["count"] -= 1
 
-    # Bought card goes to discard
     new_card = create_card(card_name)
     player["discard"].append(new_card)
 
@@ -179,28 +168,22 @@ def resolve_choice(game, player_index, choice):
 
 
 def end_turn(game, player_index):
-    """End current player's turn. Discard hand, draw new hand, switch player."""
+    """End current player's turn and begin the next player's turn if game isn't over."""
     if game["pending_choice"] is not None:
         return False, "Must resolve pending choice first"
     if game["current_player"] != player_index:
         return False, "Not your turn"
 
-    player = game["players"][player_index]
+    _end_phase(game, player_index)
 
-    # Discard remaining hand
-    player["discard"].extend(player["hand"])
-    player["hand"] = []
+    if check_game_over(game):
+        return True, None
 
-    # Switch to other player
     game["current_player"] = 1 - player_index
     game["turn"] += 1
 
-    # Reset turn state and draw for next player
-    _reset_turn_state(game)
-    next_player = game["players"][game["current_player"]]
-    _draw_cards(next_player, HAND_SIZE)
-
-    game["log"].append(f"{next_player['name']}'s turn.")
+    _begin_phase(game, game["current_player"])
+    game["log"].append(f"{game['players'][game['current_player']]['name']}'s turn.")
     return True, None
 
 

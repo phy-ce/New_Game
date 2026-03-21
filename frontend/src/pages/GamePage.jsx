@@ -2,7 +2,10 @@ import { useGame } from '../context/GameContext';
 import { useSocket } from '../hooks/useSocket';
 import PlayerInfo from '../components/PlayerInfo';
 import Hand from '../components/Hand';
-import PlayArea from '../components/PlayArea';
+import DeckPile from '../components/DeckPile';
+import DiscardPile from '../components/DiscardPile';
+import Field from '../components/Field';
+import PlayedStack from '../components/PlayedStack';
 import Market from '../components/Market';
 import GameLog from '../components/GameLog';
 import ChoiceModal from '../components/ChoiceModal';
@@ -15,87 +18,109 @@ export default function GamePage() {
   if (!gameState) return null;
 
   const {
-    lobby_code, status, turn, is_my_turn, winner, winner_name,
+    lobby_code, status, turn, is_my_turn, winner_name,
     log, market, turn_state, pending_choice, me, opponent,
   } = gameState;
 
-  const canPlayCards = is_my_turn && status === 'playing' && turn_state.actions > 0 && !pending_choice;
+  const canPlayCards = is_my_turn && status === 'playing' && !pending_choice;
   const canBuy = is_my_turn && status === 'playing' && turn_state.buys > 0 && !pending_choice;
-
-  const handlePlayCard = (cardId) => {
-    playCard(lobby_code, cardId);
-  };
-
-  const handleBuy = (cardName) => {
-    buyCard(lobby_code, cardName);
-  };
-
-  const handleEndTurn = () => {
-    endTurn(lobby_code);
-  };
-
-  const handleResolve = (choice) => {
-    resolveChoice(lobby_code, choice);
-  };
 
   return (
     <div className="game-page">
+
+      {/* Turn info — top left */}
+      <div className="turn-info">
+        Turn {turn} — {is_my_turn ? 'Your Turn' : "Opponent's Turn"}
+      </div>
+
+      {/* Main board */}
       <div className="game-main">
-        {/* Opponent section */}
+
         <div className="opponent-section">
-          <PlayerInfo player={opponent} isMe={false} />
-          <Hand faceDown count={opponent.hand_count} />
+          <div className="player-controls">
+            <PlayerInfo player={opponent} isMe={false} />
+            <div className="resource-bar">
+              <span className="rb-res rb-energy">◆ {opponent.energy}/{opponent.max_energy}</span>
+              <span className="rb-res rb-gold">◈ {opponent.gold}</span>
+              <span className="rb-res rb-buys">⊕ {!is_my_turn ? turn_state.buys : 0} buy{(!is_my_turn ? turn_state.buys : 0) !== 1 ? 's' : ''}</span>
+            </div>
+          </div>
+          <div className="hand-row">
+            <DeckPile count={opponent.deck_count} />
+            <Hand faceDown count={opponent.hand_count} />
+            <DiscardPile discard={opponent.discard} />
+          </div>
         </div>
 
-        {/* Center: play area + market */}
-        <div className="center-section">
-          <PlayArea turnState={turn_state} isMyTurn={is_my_turn} turn={turn} />
-          <Market
-            market={market}
-            onBuy={handleBuy}
-            canBuy={canBuy}
-            currentGold={turn_state.gold}
-          />
+        <div className="battle-field">
+          <Field units={opponent.field} isMe={false} />
+          <div className="field-divider" />
+          <Field units={me.field} isMe={true} />
         </div>
 
-        {/* Player section */}
         <div className="player-section">
-          <Hand
-            cards={me.hand}
-            onPlayCard={handlePlayCard}
-            isPlayable={canPlayCards}
-          />
+          <div className="hand-row">
+            <DeckPile count={me.deck_count} />
+            <Hand
+              cards={me.hand}
+              onPlayCard={(cardId) => playCard(lobby_code, cardId)}
+              isPlayable={canPlayCards}
+            />
+            <DiscardPile discard={me.discard} />
+          </div>
           <div className="player-controls">
             <PlayerInfo player={me} isMe />
+            <div className="resource-bar">
+              <span className="rb-res rb-energy">◆ {me.energy}/{me.max_energy}</span>
+              <span className="rb-res rb-gold">◈ {me.gold}</span>
+              <span className="rb-res rb-buys">⊕ {turn_state.buys} buy{turn_state.buys !== 1 ? 's' : ''}</span>
+            </div>
             {is_my_turn && status === 'playing' && (
-              <button className="btn-end-turn" onClick={handleEndTurn}>
+              <button className="btn-end-turn" onClick={() => endTurn(lobby_code)}>
                 End Turn
               </button>
             )}
           </div>
         </div>
 
-        {error && <div className="game-error">{error}</div>}
       </div>
 
-      {/* Log panel on the right */}
-      <GameLog log={log || []} />
+      {/* Left sidebar: log + played stack */}
+      <div className="left-sidebar">
+        <div className="sidebar-played">
+          <PlayedStack
+            playedThisTurn={turn_state.played_this_turn}
+            cardsPlayed={turn_state.cards_played}
+          />
+        </div>
+        <div className="sidebar-log">
+          <GameLog log={log || []} />
+        </div>
+      </div>
 
-      {/* Game over overlay */}
+      {/* Right sidebar: market */}
+      <div className="right-sidebar">
+        <Market
+          market={market}
+          onBuy={(cardName) => buyCard(lobby_code, cardName)}
+          canBuy={canBuy}
+          currentGold={me.gold}
+        />
+      </div>
+
+      {error && <div className="game-error">{error}</div>}
+
       {status === 'finished' && (
         <div className="game-over-overlay">
           <div className={`game-over-box ${winner_name === me.name ? 'go-win' : 'go-loss'}`}>
             <h2>{winner_name === me.name ? 'Victory!' : 'Defeat'}</h2>
             <p className="go-detail">{winner_name} wins!</p>
-            <button className="go-lobby-btn" onClick={resetToLobby}>
-              Back to Lobby
-            </button>
+            <button className="go-lobby-btn" onClick={resetToLobby}>Back to Lobby</button>
           </div>
         </div>
       )}
 
-      {/* Choice modal */}
-      <ChoiceModal pendingChoice={pending_choice} onResolve={handleResolve} />
+      <ChoiceModal pendingChoice={pending_choice} onResolve={(choice) => resolveChoice(lobby_code, choice)} />
     </div>
   );
 }

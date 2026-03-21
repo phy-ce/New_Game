@@ -59,8 +59,8 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #c90;
-  color: #000;
+  background: #27f;
+  color: #fff;
   font-size: 0.65rem;
   font-weight: bold;
   display: flex;
@@ -96,6 +96,22 @@
   margin-top: 2px;
   line-height: 1.2;
   padding: 0 2px;
+}
+
+/* Draw animation */
+.card-entering {
+  animation: card-draw 0.35s ease-out;
+}
+
+@keyframes card-draw {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Inspector tooltip */

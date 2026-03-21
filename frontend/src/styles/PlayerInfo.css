@@ -20,8 +20,8 @@
 
 .pi-hp-bar {
   position: relative;
-  width: 120px;
-  height: 20px;
+  width: 140px;
+  height: 26px;
   background: #333;
   border-radius: 10px;
   overflow: hidden;
@@ -29,7 +29,7 @@
 
 .pi-hp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #c44, #4c4);
+  background: #c0392b;
   transition: width 0.3s;
 }
 

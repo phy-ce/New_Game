@@ -1,0 +1,69 @@
+.played-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 140px;
+}
+
+.ps-label {
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.ps-cards {
+  cursor: pointer;
+}
+
+.ps-empty {
+  font-size: 0.75rem;
+  color: #444;
+  font-style: italic;
+}
+
+/* Modal */
+.ps-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.ps-modal {
+  background: #1a1a2e;
+  border: 2px solid #4a4a8a;
+  border-radius: 10px;
+  padding: 16px;
+  min-width: 300px;
+  max-width: 80vw;
+}
+
+.ps-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.ps-close {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.ps-close:hover { color: #fff; }
+
+.ps-modal-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}

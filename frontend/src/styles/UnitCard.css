@@ -1,0 +1,80 @@
+.unit-card {
+  position: relative;
+  width: 64px;
+  background: #2a3a2a;
+  border: 2px solid #4a7a4a;
+  border-radius: 8px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.unit-stack-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #e8a020;
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unit-image {
+  width: 36px;
+  height: 36px;
+  background: #3a5a3a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #9dca9d;
+}
+
+.unit-name {
+  font-size: 0.6rem;
+  color: #ccc;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.unit-stats {
+  display: flex;
+  gap: 4px;
+  font-size: 0.6rem;
+}
+
+.unit-hp { color: #e84a4a; }
+.unit-attack { color: #e8a020; }
+
+.unit-inspector {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  background: #1a1a2e;
+  border: 1px solid #4a7a4a;
+  border-radius: 6px;
+  padding: 8px 10px;
+  width: 140px;
+  z-index: 50;
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+.ui-name { font-weight: bold; color: #9dca9d; margin-bottom: 4px; }
+.ui-stat { color: #aaa; }
+.ui-desc { color: #888; margin-top: 4px; font-style: italic; }

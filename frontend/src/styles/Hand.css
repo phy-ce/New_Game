@@ -3,7 +3,9 @@
   gap: 8px;
   justify-content: center;
   padding: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .hand-opponent {

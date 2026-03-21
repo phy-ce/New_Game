@@ -10,8 +10,6 @@ export default function PlayerInfo({ player, isMe }) {
         <div className="pi-hp-fill" style={{ width: `${hpPercent}%` }} />
         <span className="pi-hp-text">{player.hp}/{player.max_hp}</span>
       </div>
-      <span className="pi-stat">Deck: {isMe ? player.deck_count : player.deck_count}</span>
-      <span className="pi-stat">Discard: {isMe ? player.discard_count : player.discard_count}</span>
       {!isMe && <span className="pi-stat">Hand: {player.hand_count}</span>}
     </div>
   );
