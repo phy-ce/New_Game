@@ -1,6 +1,6 @@
 import random
 import uuid
-from app.services.effects import gain_gold, gain_energy, draw, do_damage, gain_buys, summon, damage_target
+from app.services.effects import gain_gold, gain_energy, draw, do_damage, gain_buys, summon, damage_target, gain_block
 
 CARD_TEMPLATES = {
     "Copper": {
@@ -66,6 +66,15 @@ CARD_TEMPLATES = {
         "image": "market.png",
         "effects": [draw(1), gain_energy(1), gain_buys(1), gain_gold(1)],
     },
+    "Block": {
+        "name": "Block",
+        "cost": 2,
+        "energy_cost": 1,
+        "type": "action",
+        "effect": "Gain 2 Block",
+        "image": "block.png",
+        "effects": [gain_block(2)],
+    },
     "Strike": {
         "name": "Strike",
         "cost": 1,
@@ -98,6 +107,7 @@ MARKET_SUPPLY = {
     "Market": 10,
     "Summon": 10,
     "Strike": 10,
+    "Block": 10,
 }
 
 
@@ -123,10 +133,9 @@ def create_card(template_name):
 def create_starter_deck():
     """Create a starter deck: 7 Coppers + 3 random action cards."""
     deck = []
-    for _ in range(7):
+    for _ in range(6):
         deck.append(create_card("Copper"))
-    # Add a few action cards so the game is playable from the start
-    for name in ["Village", "Smithy", "Strike"]:
+    for name in ["Strike", "Strike", "Block", "Block"]:
         deck.append(create_card(name))
     random.shuffle(deck)
     return deck

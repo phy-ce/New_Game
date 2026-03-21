@@ -25,6 +25,7 @@ def _begin_phase(game, player_index):
     player = game["players"][player_index]
     player["energy"] = player["max_energy"]
     player["gold"] = 0
+    player["block"] = 0
     game["turn_state"] = {
         "buys": 1,
         "cards_played": 0,

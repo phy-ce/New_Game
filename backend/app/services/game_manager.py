@@ -22,6 +22,7 @@ def _make_player(name, sid):
         "energy": 0,
         "max_energy": 3,
         "gold": 0,
+        "block": 0,
         "hand": [],
         "deck": [],
         "discard": [],

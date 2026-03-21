@@ -30,9 +30,26 @@ def draw(amount):
     return effect
 
 
+def _apply_damage(player, amount):
+    """Apply damage to a player, consuming block first."""
+    if player.get("block", 0) > 0:
+        absorbed = min(player["block"], amount)
+        player["block"] -= absorbed
+        amount -= absorbed
+    if amount > 0:
+        player["hp"] -= amount
+
+
 def do_damage(amount):
     def effect(game, pi):
-        game["players"][1 - pi]["hp"] -= amount
+        _apply_damage(game["players"][1 - pi], amount)
+
+    return effect
+
+
+def gain_block(amount):
+    def effect(game, pi):
+        game["players"][pi]["block"] += amount
 
     return effect
 
@@ -49,7 +66,7 @@ def damage_target(amount):
         target = game.get("_play_target")
         opp = game["players"][1 - pi]
         if not target or target == "opponent":
-            opp["hp"] -= amount
+            _apply_damage(opp, amount)
         else:
             for unit in list(opp["field"]):
                 if unit["id"] == target:

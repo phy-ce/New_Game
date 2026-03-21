@@ -18,6 +18,12 @@
   min-width: 80px;
 }
 
+.pi-hp-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .pi-hp-bar {
   position: relative;
   width: 140px;
@@ -28,9 +34,28 @@
 }
 
 .pi-hp-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
   height: 100%;
   background: #c0392b;
   transition: width 0.3s;
+}
+
+.pi-block-fill {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: rgba(80, 160, 220, 0.45);
+  transition: width 0.3s;
+}
+
+.pi-block {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #7bcfff;
+  white-space: nowrap;
 }
 
 .pi-hp-text {
@@ -46,6 +71,7 @@
   font-weight: bold;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  z-index: 1;
 }
 
 .pi-stat {

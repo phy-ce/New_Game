@@ -119,16 +119,23 @@
 }
 
 /* Targeting mode */
+.targeting-active {
+  position: relative;
+}
+
 .targeting-active::before {
   content: 'Select a target';
-  display: block;
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: bold;
   color: #f88;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding-bottom: 4px;
+  pointer-events: none;
 }
 
 /* Resource bar */
