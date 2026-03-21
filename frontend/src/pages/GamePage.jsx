@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { useSocket } from '../hooks/useSocket';
 import PlayerInfo from '../components/PlayerInfo';
@@ -12,8 +13,9 @@ import ChoiceModal from '../components/ChoiceModal';
 import '../styles/GamePage.css';
 
 export default function GamePage() {
-  const { gameState, error, resetToLobby } = useGame();
+  const { gameState, error, resetToLobby, cardTemplates } = useGame();
   const { playCard, buyCard, resolveChoice, endTurn } = useSocket();
+  const [targetingCard, setTargetingCard] = useState(null);
 
   if (!gameState) return null;
 
@@ -22,8 +24,23 @@ export default function GamePage() {
     log, market, turn_state, pending_choice, me, opponent,
   } = gameState;
 
-  const canPlayCards = is_my_turn && status === 'playing' && !pending_choice;
-  const canBuy = is_my_turn && status === 'playing' && turn_state.buys > 0 && !pending_choice;
+  const canPlayCards = is_my_turn && status === 'playing' && !pending_choice && !targetingCard;
+  const canBuy = is_my_turn && status === 'playing' && turn_state.buys > 0 && !pending_choice && !targetingCard;
+  const isTargeting = !!targetingCard;
+
+  const handlePlayCard = (cardId) => {
+    const card = me.hand.find(c => c.id === cardId);
+    if (card && cardTemplates[card.name]?.needs_target) {
+      setTargetingCard(cardId);
+    } else {
+      playCard(lobby_code, cardId);
+    }
+  };
+
+  const handleTarget = (targetId) => {
+    playCard(lobby_code, targetingCard, targetId);
+    setTargetingCard(null);
+  };
 
   return (
     <div className="game-page">
@@ -36,9 +53,9 @@ export default function GamePage() {
       {/* Main board */}
       <div className="game-main">
 
-        <div className="opponent-section">
+        <div className={`opponent-section ${isTargeting ? 'targeting-active' : ''}`}>
           <div className="player-controls">
-            <PlayerInfo player={opponent} isMe={false} />
+            <PlayerInfo player={opponent} isMe={false} onTarget={isTargeting ? () => handleTarget('opponent') : undefined} />
             <div className="resource-bar">
               <span className="rb-res rb-energy">◆ {opponent.energy}/{opponent.max_energy}</span>
               <span className="rb-res rb-gold">◈ {opponent.gold}</span>
@@ -53,7 +70,7 @@ export default function GamePage() {
         </div>
 
         <div className="battle-field">
-          <Field units={opponent.field} isMe={false} />
+          <Field units={opponent.field} isMe={false} onTargetUnit={isTargeting ? handleTarget : undefined} />
           <div className="field-divider" />
           <Field units={me.field} isMe={true} />
         </div>
@@ -63,7 +80,7 @@ export default function GamePage() {
             <DeckPile count={me.deck_count} />
             <Hand
               cards={me.hand}
-              onPlayCard={(cardId) => playCard(lobby_code, cardId)}
+              onPlayCard={handlePlayCard}
               isPlayable={canPlayCards}
             />
             <DiscardPile discard={me.discard} />

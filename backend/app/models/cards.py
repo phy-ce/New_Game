@@ -1,6 +1,6 @@
 import random
 import uuid
-from app.services.effects import gain_gold, gain_energy, draw, do_damage, gain_buys, summon
+from app.services.effects import gain_gold, gain_energy, draw, do_damage, gain_buys, summon, damage_target
 
 CARD_TEMPLATES = {
     "Copper": {
@@ -66,6 +66,16 @@ CARD_TEMPLATES = {
         "image": "market.png",
         "effects": [draw(1), gain_energy(1), gain_buys(1), gain_gold(1)],
     },
+    "Strike": {
+        "name": "Strike",
+        "cost": 1,
+        "energy_cost": 1,
+        "type": "action",
+        "effect": "Deal 2 damage to target",
+        "image": "strike.png",
+        "needs_target": True,
+        "effects": [damage_target(2)],
+    },
     "Summon": {
         "name": "Summon Minion",
         "cost": 3,
@@ -87,10 +97,11 @@ MARKET_SUPPLY = {
     "Militia": 10,
     "Market": 10,
     "Summon": 10,
+    "Strike": 10,
 }
 
 
-_CLIENT_FIELDS = {"name", "cost", "energy_cost", "type", "effect", "image"}
+_CLIENT_FIELDS = {"name", "cost", "energy_cost", "type", "effect", "image", "needs_target"}
 
 
 def get_client_templates():
@@ -115,7 +126,7 @@ def create_starter_deck():
     for _ in range(7):
         deck.append(create_card("Copper"))
     # Add a few action cards so the game is playable from the start
-    for name in ["Village", "Smithy", "Militia"]:
+    for name in ["Village", "Smithy", "Strike"]:
         deck.append(create_card(name))
     random.shuffle(deck)
     return deck

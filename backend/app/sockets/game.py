@@ -40,6 +40,7 @@ def register_game_handlers(socketio):
     def handle_play(data):
         code = data.get("lobby_code", "").strip().upper()
         card_id = data.get("card_id")
+        target = data.get("target")
         game = game_manager.get_game(code)
         if not game:
             emit('error', {"message": "Game not found"})
@@ -48,7 +49,7 @@ def register_game_handlers(socketio):
         if player_idx is None:
             emit('error', {"message": "Player not found"})
             return
-        success, error = play_card(game, player_idx, card_id)
+        success, error = play_card(game, player_idx, card_id, target)
         if not success:
             emit('error', {"message": error})
             return

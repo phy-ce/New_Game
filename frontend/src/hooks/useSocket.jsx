@@ -99,11 +99,10 @@ export function SocketProvider({ children }) {
     socketRef.current?.emit('start_game', { lobby_code: lobbyCode });
   }, []);
 
-  const playCard = useCallback((lobbyCode, cardId) => {
-    socketRef.current?.emit('play_card', {
-      lobby_code: lobbyCode,
-      card_id: cardId,
-    });
+  const playCard = useCallback((lobbyCode, cardId, target = null) => {
+    const payload = { lobby_code: lobbyCode, card_id: cardId };
+    if (target) payload.target = target;
+    socketRef.current?.emit('play_card', payload);
   }, []);
 
   const buyCard = useCallback((lobbyCode, cardName) => {

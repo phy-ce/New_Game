@@ -5,7 +5,7 @@ import '../styles/Field.css';
 
 const SLOT_LIMIT = 7;
 
-export default function Field({ units, isMe }) {
+export default function Field({ units, isMe, onTargetUnit }) {
   const { unitTemplates } = useGame();
   const [expandedStack, setExpandedStack] = useState(null);
   const prevIdsRef = useRef(new Set());
@@ -29,7 +29,12 @@ export default function Field({ units, isMe }) {
     return (
       <div className={`field ${isMe ? 'field-me' : 'field-opponent'}`}>
         {units.map(unit => (
-          <UnitCard key={unit.id} unit={unit} isNew={newIds.has(unit.id)} />
+          <UnitCard
+            key={unit.id}
+            unit={unit}
+            isNew={newIds.has(unit.id)}
+            onTarget={onTargetUnit ? () => onTargetUnit(unit.id) : undefined}
+          />
         ))}
       </div>
     );

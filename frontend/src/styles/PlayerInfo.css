@@ -52,3 +52,15 @@
   color: #999;
   font-size: 0.75rem;
 }
+
+.player-info.targetable {
+  cursor: pointer;
+  outline: 2px solid #e55;
+  outline-offset: 2px;
+  animation: target-pulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes target-pulse {
+  from { outline-color: #e55; }
+  to   { outline-color: #f99; }
+}

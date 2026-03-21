@@ -44,6 +44,23 @@ def gain_buys(amount):
     return effect
 
 
+def damage_target(amount):
+    def effect(game, pi):
+        target = game.get("_play_target")
+        opp = game["players"][1 - pi]
+        if not target or target == "opponent":
+            opp["hp"] -= amount
+        else:
+            for unit in list(opp["field"]):
+                if unit["id"] == target:
+                    unit["current_hp"] -= amount
+                    if unit["current_hp"] <= 0:
+                        opp["field"].remove(unit)
+                        game["log"].append(f"{unit['name']} is destroyed!")
+                    break
+    return effect
+
+
 def summon(unit_type):
     def effect(game, pi):
         from app.models.units import create_unit

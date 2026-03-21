@@ -70,7 +70,7 @@ def start_game(game):
     game["log"].append(f"{game['players'][0]['name']}'s turn.")
 
 
-def play_card(game, player_index, card_id):
+def play_card(game, player_index, card_id, target=None):
     """Play a card from hand. Returns (success, error)."""
     if game["pending_choice"] is not None:
         return False, "Must resolve pending choice first"
@@ -95,8 +95,10 @@ def play_card(game, player_index, card_id):
         return False, "Not enough energy"
     player["energy"] -= energy_cost
 
-    # Apply card effects (placeholder MVP logic)
+    # Apply card effects
+    game["_play_target"] = target
     _apply_card_effect(game, player_index, card)
+    game.pop("_play_target", None)
 
     turn["cards_played"] += 1
     turn["played_this_turn"].insert(0, card)
