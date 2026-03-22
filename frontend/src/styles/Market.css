@@ -82,6 +82,13 @@
   box-shadow: 0 4px 20px rgba(0,0,0,0.6);
 }
 
+.mp-inspector-portal {
+  position: fixed;
+  bottom: auto;
+  right: auto;
+  z-index: 9999;
+}
+
 .mpi-name {
   font-size: 0.9rem;
   font-weight: bold;

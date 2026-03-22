@@ -8,7 +8,6 @@ export default function TurnStats({ turnState, isMyTurn, turn }) {
         {isMyTurn ? 'Your Turn' : "Opponent's Turn"}
       </div>
       <div className="ts-resources">
-        <span className="ts-res ts-buys">Buys: {turnState.buys}</span>
         <span className="ts-res ts-played">Played: {turnState.cards_played}</span>
       </div>
     </div>

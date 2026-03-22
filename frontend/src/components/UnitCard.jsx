@@ -1,17 +1,41 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useGame } from '../context/GameContext';
 import '../styles/UnitCard.css';
 
+function getTooltipStyle(anchorRect, tooltipWidth) {
+  const GAP = 8;
+  const left = Math.max(8, Math.min(
+    anchorRect.left + anchorRect.width / 2 - tooltipWidth / 2,
+    window.innerWidth - tooltipWidth - 8
+  ));
+  if (anchorRect.top < 160) {
+    return { top: anchorRect.bottom + GAP, left };
+  }
+  return { top: anchorRect.top - GAP, left, transform: 'translateY(-100%)' };
+}
+
 export default function UnitCard({ unit, stackCount, onTarget }) {
   const { unitTemplates } = useGame();
-  const [showInspector, setShowInspector] = useState(false);
+  const [tooltipStyle, setTooltipStyle] = useState(null);
+  const cardRef = useRef(null);
   const template = unitTemplates[unit.name] || {};
+
+  const handleMouseEnter = () => {
+    if (!cardRef.current) return;
+    setTooltipStyle(getTooltipStyle(cardRef.current.getBoundingClientRect(), 140));
+  };
+
+  const handleMouseLeave = () => setTooltipStyle(null);
+
+  useEffect(() => () => setTooltipStyle(null), []);
 
   return (
     <div
+      ref={cardRef}
       className={`unit-card ${onTarget ? 'targetable' : ''}`}
-      onMouseEnter={() => setShowInspector(true)}
-      onMouseLeave={() => setShowInspector(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={onTarget || undefined}
     >
       {stackCount > 1 && <div className="unit-stack-count">x{stackCount}</div>}
@@ -22,13 +46,14 @@ export default function UnitCard({ unit, stackCount, onTarget }) {
         <span className="unit-attack">⚔ {template.attack}</span>
       </div>
 
-      {showInspector && (
-        <div className="unit-inspector">
+      {tooltipStyle && createPortal(
+        <div className="unit-inspector unit-inspector-portal" style={tooltipStyle}>
           <div className="ui-name">{unit.name}</div>
           <div className="ui-stat">HP: {unit.current_hp}/{template.hp}</div>
           <div className="ui-stat">ATK: {template.attack}</div>
           <div className="ui-desc">{template.description}</div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

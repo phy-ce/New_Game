@@ -31,19 +31,30 @@
   border: 1px solid #4a7a4a;
   border-radius: 6px;
   padding: 8px;
-  min-width: 140px;
   z-index: 60;
-  font-size: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 4px;
+  width: 500px;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #3a4a6a transparent;
 }
 
-.stack-unit-row {
-  color: #ccc;
-  padding: 2px 0;
-  border-bottom: 1px solid #2a2a4a;
+.stack-popup::-webkit-scrollbar {
+  width: 4px;
 }
 
-.stack-unit-row:last-child {
-  border-bottom: none;
+.stack-popup::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stack-popup::-webkit-scrollbar-thumb {
+  background: #3a4a6a;
+  border-radius: 2px;
 }
 
 .stack-overflow {

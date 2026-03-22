@@ -131,6 +131,13 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
+.card-inspector-portal {
+  position: fixed;
+  bottom: auto;
+  left: auto;
+  z-index: 9999;
+}
+
 .inspector-name {
   font-size: 0.9rem;
   font-weight: bold;

@@ -5,7 +5,7 @@ UNIT_TEMPLATES = {
     "Goblin": {
         "name": "Goblin",
         "hp": 3,
-        "attack": 2,
+        "attack": 0,
         "description": "Gains 1 gold for owner at end of turn.",
         "image": "goblin.png",
         "effect": gain_gold(1),

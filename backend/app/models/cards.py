@@ -1,6 +1,6 @@
 import random
 import uuid
-from app.services.effects import gain_gold, gain_energy, draw, do_damage, gain_buys, summon, damage_target, gain_block
+from app.services.effects import gain_gold, gain_energy, draw, do_damage, summon, damage_target, gain_block
 
 CARD_TEMPLATES = {
     "Copper": {
@@ -57,15 +57,6 @@ CARD_TEMPLATES = {
         "image": "militia.png",
         "effects": [gain_gold(2), do_damage(2)],
     },
-    "Market": {
-        "name": "Market",
-        "cost": 5,
-        "energy_cost": 1,
-        "type": "action",
-        "effect": "+1 Card, +1 Energy, +1 Buy, +1 Gold",
-        "image": "market.png",
-        "effects": [draw(1), gain_energy(1), gain_buys(1), gain_gold(1)],
-    },
     "Block": {
         "name": "Block",
         "cost": 2,
@@ -104,7 +95,6 @@ MARKET_SUPPLY = {
     "Village": 10,
     "Smithy": 10,
     "Militia": 10,
-    "Market": 10,
     "Summon": 10,
     "Strike": 10,
     "Block": 10,

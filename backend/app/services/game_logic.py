@@ -6,6 +6,7 @@ from app.models.cards import (
     create_card,
 )
 from app.models.units import UNIT_TEMPLATES
+from app.services.effects import _apply_damage
 HAND_SIZE = 5
 
 
@@ -21,30 +22,31 @@ def _draw_cards(player, count):
 
 
 def _begin_phase(game, player_index):
-    """Start of a player's turn: reset resources."""
+    """Start of a player's turn: units attack, reset resources."""
     player = game["players"][player_index]
+    opponent = game["players"][1 - player_index]
+
+    for unit in player["field"]:
+        template = UNIT_TEMPLATES[unit["name"]]
+        if template["attack"] > 0:
+            _apply_damage(opponent, template["attack"])
+            game["log"].append(f"{unit['name']} attacks for {template['attack']}")
+        if template.get("effect"):
+            template["effect"](game, player_index)
+
     player["energy"] = player["max_energy"]
-    player["gold"] = 0
     player["block"] = 0
     game["turn_state"] = {
-        "buys": 1,
         "cards_played": 0,
         "played_this_turn": [],
     }
 
 
 def _end_phase(game, player_index):
-    """End of a player's turn: units attack, discard hand, draw next hand."""
+    """End of a player's turn: discard hand, draw next hand, clear gold."""
     player = game["players"][player_index]
-    opponent = game["players"][1 - player_index]
 
-    for unit in player["field"]:
-        template = UNIT_TEMPLATES[unit["name"]]
-        opponent["hp"] -= template["attack"]
-        game["log"].append(f"{unit['name']} attacks for {template['attack']}")
-        if template.get("effect"):
-            template["effect"](game, player_index)
-
+    player["gold"] = 0
     player["discard"].extend(player["hand"])
     player["hand"] = []
     _draw_cards(player, HAND_SIZE)
@@ -128,8 +130,6 @@ def buy_card(game, player_index, card_name):
     player = game["players"][player_index]
     turn = game["turn_state"]
 
-    if turn["buys"] <= 0:
-        return False, "No buys remaining"
     if card_name not in game["market"]:
         return False, "Card not in market"
 
@@ -142,7 +142,6 @@ def buy_card(game, player_index, card_name):
         return False, f"Not enough gold (need {cost}, have {player['gold']})"
 
     player["gold"] -= cost
-    turn["buys"] -= 1
     pile["count"] -= 1
 
     new_card = create_card(card_name)

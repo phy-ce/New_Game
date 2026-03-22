@@ -71,6 +71,15 @@
   pointer-events: none;
 }
 
+.pile-popup-portal {
+  position: fixed;
+  bottom: auto;
+  left: auto;
+  z-index: 9999;
+  scrollbar-width: thin;
+  scrollbar-color: #3a4a6a transparent;
+}
+
 .pile-popup-row {
   font-size: 0.7rem;
   color: #ccc;

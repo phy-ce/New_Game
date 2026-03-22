@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
 import { useSocket } from '../hooks/useSocket';
 import PlayerInfo from '../components/PlayerInfo';
@@ -17,15 +17,21 @@ export default function GamePage() {
   const { playCard, buyCard, resolveChoice, endTurn } = useSocket();
   const [targetingCard, setTargetingCard] = useState(null);
 
+  const turn = gameState?.turn;
+  const status = gameState?.status;
+
+  // Clear targeting when turn changes or game ends
+  useEffect(() => { setTargetingCard(null); }, [turn, status]);
+
   if (!gameState) return null;
 
   const {
-    lobby_code, status, turn, is_my_turn, winner_name,
+    lobby_code, is_my_turn, winner_name,
     log, market, turn_state, pending_choice, me, opponent,
   } = gameState;
 
   const canPlayCards = is_my_turn && status === 'playing' && !pending_choice && !targetingCard;
-  const canBuy = is_my_turn && status === 'playing' && turn_state.buys > 0 && !pending_choice && !targetingCard;
+  const canBuy = is_my_turn && status === 'playing' && !pending_choice && !targetingCard;
   const isTargeting = !!targetingCard;
 
   const handlePlayCard = (cardId) => {
@@ -59,7 +65,6 @@ export default function GamePage() {
             <div className="resource-bar">
               <span className="rb-res rb-energy">◆ {opponent.energy}/{opponent.max_energy}</span>
               <span className="rb-res rb-gold">◈ {opponent.gold}</span>
-              <span className="rb-res rb-buys">⊕ {!is_my_turn ? turn_state.buys : 0} buy{(!is_my_turn ? turn_state.buys : 0) !== 1 ? 's' : ''}</span>
             </div>
           </div>
           <div className="hand-row">
@@ -90,7 +95,6 @@ export default function GamePage() {
             <div className="resource-bar">
               <span className="rb-res rb-energy">◆ {me.energy}/{me.max_energy}</span>
               <span className="rb-res rb-gold">◈ {me.gold}</span>
-              <span className="rb-res rb-buys">⊕ {turn_state.buys} buy{turn_state.buys !== 1 ? 's' : ''}</span>
             </div>
             {is_my_turn && status === 'playing' && (
               <button className="btn-end-turn" onClick={() => endTurn(lobby_code)}>

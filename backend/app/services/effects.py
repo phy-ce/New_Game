@@ -54,12 +54,6 @@ def gain_block(amount):
     return effect
 
 
-def gain_buys(amount):
-    def effect(game, pi):
-        game["turn_state"]["buys"] += amount
-
-    return effect
-
 
 def damage_target(amount):
     def effect(game, pi):

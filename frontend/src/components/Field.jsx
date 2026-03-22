@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { useGame } from '../context/GameContext';
 import UnitCard from './UnitCard';
 import '../styles/Field.css';
+
 
 const SLOT_LIMIT = 7;
 
 export default function Field({ units, isMe, onTargetUnit }) {
-  const { unitTemplates } = useGame();
   const [expandedStack, setExpandedStack] = useState(null);
   const prevIdsRef = useRef(new Set());
   const [newIds, setNewIds] = useState(new Set());
@@ -22,6 +21,28 @@ export default function Field({ units, isMe, onTargetUnit }) {
     }
     prevIdsRef.current = currentIds;
   }, [units]);
+
+  // Close popup when targeting mode ends
+  useEffect(() => {
+    if (!onTargetUnit) setExpandedStack(null);
+  }, [onTargetUnit]);
+
+  // Close popup on click outside
+  useEffect(() => {
+    if (!expandedStack) return;
+    const handler = () => setExpandedStack(null);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [expandedStack]);
+
+  const handleStackClick = (name) => {
+    setExpandedStack(expandedStack === name ? null : name);
+  };
+
+  const handleTargetFromPopup = (unitId, stackName) => {
+    setExpandedStack(null);
+    onTargetUnit(unitId);
+  };
 
   const shouldStack = units.length > SLOT_LIMIT;
 
@@ -54,16 +75,18 @@ export default function Field({ units, isMe, onTargetUnit }) {
       {visible.map(([name, unitList]) => (
         <div
           key={name}
-          className="unit-stack-slot"
-          onClick={() => setExpandedStack(expandedStack === name ? null : name)}
+          className={`unit-stack-slot ${onTargetUnit ? 'targetable' : ''}`}
+          onClick={(e) => { e.stopPropagation(); handleStackClick(name); }}
         >
           <UnitCard unit={unitList[0]} stackCount={unitList.length} isNew={newIds.has(unitList[0].id)} />
           {expandedStack === name && (
-            <div className="stack-popup">
+            <div className="stack-popup" onClick={e => e.stopPropagation()}>
               {unitList.map(u => (
-                <div key={u.id} className="stack-unit-row">
-                  {u.name} — ♥ {u.current_hp}/{unitTemplates[u.name]?.hp}
-                </div>
+                <UnitCard
+                  key={u.id}
+                  unit={u}
+                  onTarget={onTargetUnit ? () => handleTargetFromPopup(u.id, name) : undefined}
+                />
               ))}
             </div>
           )}
