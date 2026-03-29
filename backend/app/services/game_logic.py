@@ -6,7 +6,7 @@ from app.models.cards import (
     create_card,
 )
 from app.models.units import UNIT_TEMPLATES
-from app.services.effects import _apply_damage
+from app.services.effects import _apply_damage, apply_passives
 HAND_SIZE = 5
 
 
@@ -26,13 +26,27 @@ def _begin_phase(game, player_index):
     player = game["players"][player_index]
     opponent = game["players"][1 - player_index]
 
+    for p in game["players"]:
+        p["damaged_this_turn"] = False
+
+    apply_passives(game, player_index)
+
     for unit in player["field"]:
-        template = UNIT_TEMPLATES[unit["name"]]
-        if template["attack"] > 0:
-            _apply_damage(opponent, template["attack"])
-            game["log"].append(f"{unit['name']} attacks for {template['attack']}")
-        if template.get("effect"):
-            template["effect"](game, player_index)
+        if unit.get("is_champion"):
+            attack = unit.get("attack", 0)
+            unit_effect = unit.get("effect")
+        else:
+            template = UNIT_TEMPLATES[unit["name"]]
+            attack = template["attack"]
+            unit_effect = template.get("effect")
+
+        if attack > 0:
+            _apply_damage(opponent, attack)
+            game["log"].append(f"{unit['name']} attacks for {attack}")
+        if unit_effect:
+            fns = unit_effect if isinstance(unit_effect, list) else [unit_effect]
+            for fn in fns:
+                fn(game, player_index)
 
     player["energy"] = player["max_energy"]
     player["block"] = 0
@@ -100,14 +114,18 @@ def play_card(game, player_index, card_id, target=None):
 
     # Apply card effects
     game["_play_target"] = target
+    game["_current_card"] = card
     _apply_card_effect(game, player_index, card)
     game.pop("_play_target", None)
+    game.pop("_current_card", None)
 
     turn["cards_played"] += 1
     turn["played_this_turn"].insert(0, card)
 
-    # Card goes to discard after being played
-    player["discard"].append(card)
+    # Champions stay on field; exhausted cards disappear; everything else goes to discard
+    template = CARD_TEMPLATES[card["name"]]
+    if not template.get("champion") and not template.get("exhaust"):
+        player["discard"].append(card)
 
     game["log"].append(
         f"{player['name']} plays {card['name']} ({CARD_TEMPLATES[card['name']]['effect']})"

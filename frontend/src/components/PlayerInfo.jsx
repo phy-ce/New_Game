@@ -21,7 +21,10 @@ export default function PlayerInfo({ player, isMe, onTarget }) {
         </div>
         <span className="pi-block" style={{ visibility: player.block > 0 ? 'visible' : 'hidden' }}>🛡 {player.block}</span>
       </div>
-      {!isMe && <span className="pi-stat">Hand: {player.hand_count}</span>}
+      <div className="pi-stats-row">
+        {player.strength > 0 && <span className="pi-strength">⚔ {player.strength}</span>}
+        {!isMe && <span className="pi-stat">Hand: {player.hand_count}</span>}
+      </div>
     </div>
   );
 }

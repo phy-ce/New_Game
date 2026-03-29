@@ -79,6 +79,19 @@
   z-index: 1;
 }
 
+.pi-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pi-strength {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #f4a623;
+  white-space: nowrap;
+}
+
 .pi-stat {
   color: #999;
   font-size: 0.75rem;

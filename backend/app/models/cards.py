@@ -1,6 +1,6 @@
 import random
 import uuid
-from app.services.effects import gain_gold, gain_energy, draw, do_damage, summon, damage_target, gain_block
+from app.services.effects import gain_gold, gain_energy, draw, do_damage, summon, damage_target, gain_block, gain_strength, champion_place, twist_blade, gain_passive, heal_owner
 
 CARD_TEMPLATES = {
     "Copper": {
@@ -39,42 +39,156 @@ CARD_TEMPLATES = {
         "image": "village.png",
         "effects": [draw(1), gain_energy(1)],
     },
-    "Smithy": {
-        "name": "Smithy",
-        "cost": 4,
-        "energy_cost": 1,
-        "type": "action",
-        "effect": "+3 Cards",
-        "image": "smithy.png",
-        "effects": [draw(3)],
-    },
-    "Militia": {
-        "name": "Militia",
-        "cost": 4,
-        "energy_cost": 1,
-        "type": "action",
-        "effect": "+2 Gold, opponent -2 HP",
-        "image": "militia.png",
-        "effects": [gain_gold(2), do_damage(2)],
-    },
     "Block": {
         "name": "Block",
         "cost": 2,
         "energy_cost": 1,
         "type": "action",
-        "effect": "Gain 2 Block",
+        "effect": "Gain 3 Block",
         "image": "block.png",
-        "effects": [gain_block(2)],
+        "effects": [gain_block(3)],
     },
     "Strike": {
         "name": "Strike",
         "cost": 1,
         "energy_cost": 1,
         "type": "action",
-        "effect": "Deal 2 damage to target",
+        "effect": "Deal 4 damage to target",
         "image": "strike.png",
         "needs_target": True,
-        "effects": [damage_target(2)],
+        "effects": [damage_target(4)],
+    },
+    "Blabber": {
+        "name": "Blabber",
+        "cost": 3,
+        "energy_cost": 0,
+        "type": "action",
+        "effect": "Deal 1 damage to target, +1 Card",
+        "image": "strike.png",
+        "needs_target": True,
+        "effects": [damage_target(1), draw(1)],
+    },
+    "Work": {
+        "name": "Work",
+        "cost": 4,
+        "energy_cost": 1,
+        "type": "action",
+        "effect": "+1 Card, +2 Gold",
+        "image": "village.png",
+        "effects": [draw(1), gain_gold(2)],
+    },
+    "Study": {
+        "name": "Study",
+        "cost": 5,
+        "energy_cost": 1,
+        "type": "action",
+        "effect": "+3 Cards",
+        "image": "smithy.png",
+        "effects": [draw(3)],
+    },
+    "Twist Blade": {
+        "name": "Twist Blade",
+        "cost": 2,
+        "energy_cost": 1,
+        "type": "action",
+        "effect": "Deal 3 damage. If opponent was damaged this turn, deal 10 instead.",
+        "image": "strike.png",
+        "effects": [twist_blade()],
+    },
+    "Fortify": {
+        "name": "Fortify",
+        "cost": 5,
+        "energy_cost": 1,
+        "type": "action",
+        "effect": "+8 Block, +2 Cards",
+        "image": "block.png",
+        "effects": [gain_block(8), draw(2)],
+    },
+    "Recharge": {
+        "name": "Recharge",
+        "cost": 4,
+        "energy_cost": 0,
+        "type": "action",
+        "effect": "+1 Card, +1 Energy",
+        "image": "village.png",
+        "effects": [draw(1), gain_energy(1)],
+    },
+    "Farm": {
+        "name": "Farm",
+        "cost": 3,
+        "energy_cost": 2,
+        "type": "action",
+        "champion": True,
+        "effect": "Champion 0/4. Each turn: +1 HP, +1 Gold.",
+        "image": "village.png",
+        "effects": [champion_place(hp=4, attack=0, effect=[heal_owner(1), gain_gold(1)])],
+    },
+    "Sleep": {
+        "name": "Sleep",
+        "cost": 3,
+        "energy_cost": 1,
+        "type": "action",
+        "effect": "Next turn: +2 Energy.",
+        "image": "village.png",
+        "effects": [gain_passive("rest", 1)],
+    },
+    "Watchtower": {
+        "name": "Watchtower",
+        "cost": 5,
+        "energy_cost": 2,
+        "type": "action",
+        "champion": True,
+        "effect": "Champion 2/15.",
+        "image": "village.png",
+        "effects": [champion_place(hp=15, attack=2)],
+    },
+    "Wall": {
+        "name": "Wall",
+        "cost": 4,
+        "energy_cost": 1,
+        "type": "action",
+        "champion": True,
+        "effect": "Champion 0/8. Absorbs all damage dealt to you.",
+        "image": "block.png",
+        "effects": [champion_place(hp=8, attack=0, absorbs_damage=True)],
+    },
+    "Ritual": {
+        "name": "Ritual",
+        "cost": 7,
+        "energy_cost": 3,
+        "type": "action",
+        "exhaust": True,
+        "effect": "Gain Ritual passive: +1 Strength each turn. Exhaust.",
+        "image": "village.png",
+        "effects": [gain_passive("ritual", 1)],
+    },
+    "Train": {
+        "name": "Train",
+        "cost": 5,
+        "energy_cost": 0,
+        "type": "action",
+        "effect": "+1 Strength",
+        "image": "village.png",
+        "effects": [gain_strength(1)],
+    },
+    "Doublestrike": {
+        "name": "Doublestrike",
+        "cost": 5,
+        "energy_cost": 1,
+        "type": "action",
+        "effect": "Deal 4 damage twice to one target",
+        "image": "strike.png",
+        "needs_target": True,
+        "effects": [damage_target(4), damage_target(4)],
+    },
+    "Bat": {
+        "name": "Bat",
+        "cost": 4,
+        "energy_cost": 2,
+        "type": "action",
+        "effect": "Summon 2 Bats (2/3)",
+        "image": "bat.png",
+        "effects": [summon("Bat"), summon("Bat")],
     },
     "Summon": {
         "name": "Summon Minion",
@@ -93,15 +207,27 @@ MARKET_SUPPLY = {
     "Silver": 20,
     "Gold": 15,
     "Village": 10,
-    "Smithy": 10,
-    "Militia": 10,
     "Summon": 10,
     "Strike": 10,
     "Block": 10,
+    "Recharge": 10,
+    "Fortify": 10,
+    "Twist Blade": 10,
+    "Blabber": 10,
+    "Work": 10,
+    "Study": 10,
+    "Bat": 10,
+    "Doublestrike": 10,
+    "Train": 10,
+    "Ritual": 10,
+    "Sleep": 10,
+    "Watchtower": 10,
+    "Wall": 10,
+    "Farm": 10,
 }
 
 
-_CLIENT_FIELDS = {"name", "cost", "energy_cost", "type", "effect", "image", "needs_target"}
+_CLIENT_FIELDS = {"name", "cost", "energy_cost", "type", "effect", "image", "needs_target", "exhaust"}
 
 
 def get_client_templates():
@@ -132,8 +258,6 @@ def create_starter_deck():
 
 
 def create_market():
-    """Create the shared market supply."""
-    market = {}
-    for name, count in MARKET_SUPPLY.items():
-        market[name] = {"count": count}
-    return market
+    """Create a market with 12 randomly selected cards from the full card pool."""
+    selected = random.sample(list(CARD_TEMPLATES.keys()), 12)
+    return {name: {"count": MARKET_SUPPLY.get(name, 10)} for name in selected}

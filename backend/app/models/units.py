@@ -2,6 +2,13 @@ import uuid
 from app.services.effects import gain_gold
 
 UNIT_TEMPLATES = {
+    "Bat": {
+        "name": "Bat",
+        "hp": 3,
+        "attack": 2,
+        "description": "A swift bat.",
+        "image": "bat.png",
+    },
     "Goblin": {
         "name": "Goblin",
         "hp": 3,

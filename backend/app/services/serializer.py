@@ -1,3 +1,9 @@
+_UNIT_INTERNAL_FIELDS = {"source_card", "effect"}
+
+def _serialize_field(field):
+    return [{k: v for k, v in unit.items() if k not in _UNIT_INTERNAL_FIELDS} for unit in field]
+
+
 def serialize_for_player(game, player_index):
     """Return a version of the game state safe to send to player_index.
 
@@ -33,8 +39,9 @@ def serialize_for_player(game, player_index):
             "max_energy": me["max_energy"],
             "gold": me["gold"],
             "block": me["block"],
+            "strength": me["strength"],
             "hand": me["hand"],
-            "field": me["field"],
+            "field": _serialize_field(me["field"]),
             "deck_count": len(me["deck"]),
             "discard": me["discard"],
         },
@@ -46,7 +53,8 @@ def serialize_for_player(game, player_index):
             "max_energy": opp["max_energy"],
             "gold": opp["gold"],
             "block": opp["block"],
-            "field": opp["field"],
+            "strength": opp["strength"],
+            "field": _serialize_field(opp["field"]),
             "hand_count": len(opp["hand"]),
             "deck_count": len(opp["deck"]),
             "discard": opp["discard"],
