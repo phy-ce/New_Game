@@ -202,14 +202,12 @@ CARD_TEMPLATES = {
 }
 
 # Market supply configuration: how many of each card are available to buy
+# Note: Copper, Strike, and Block are starter-deck-only cards and must NOT appear here.
 MARKET_SUPPLY = {
-    "Copper": 30,
     "Silver": 20,
     "Gold": 15,
     "Village": 10,
     "Summon": 10,
-    "Strike": 10,
-    "Block": 10,
     "Recharge": 10,
     "Fortify": 10,
     "Twist Blade": 10,
@@ -259,5 +257,5 @@ def create_starter_deck():
 
 def create_market():
     """Create a market with 12 randomly selected cards from the full card pool."""
-    selected = random.sample(list(CARD_TEMPLATES.keys()), 12)
+    selected = random.sample(list(MARKET_SUPPLY.keys()), 12)
     return {name: {"count": MARKET_SUPPLY.get(name, 10)} for name in selected}

@@ -20,7 +20,7 @@ def _make_player(name, sid):
         "hp": 100,
         "max_hp": 100,
         "energy": 0,
-        "max_energy": 3,
+        "max_energy": 4,
         "gold": 0,
         "block": 0,
         "strength": 0,
