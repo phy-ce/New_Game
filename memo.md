@@ -28,3 +28,7 @@ socket.emit('debug_cmd', {lobby_code: "ABCD", cmd: "deal_damage", amount: 25})
 ### 카드 cid 목록
 
 `cid.xml` 참고.
+
+## #003 TODO
+
+- Twistblade: 타겟 지정(유닛 포함)이 가능한 건지, 적 플레이어만 공격 가능한 건지 명확히 정해야 함
