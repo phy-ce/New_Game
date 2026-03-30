@@ -49,10 +49,19 @@ def _apply_damage(player, amount):
         player["damaged_this_turn"] = True
 
 
+def _damage_log(base, strength):
+    if strength > 0:
+        return f"{base + strength} damage ({base}+{strength})"
+    return f"{base} damage"
+
+
 def do_damage(amount):
     def effect(game, pi):
-        total = amount + game["players"][pi].get("strength", 0)
+        player = game["players"][pi]
+        strength = player.get("strength", 0)
+        total = amount + strength
         _apply_damage(game["players"][1 - pi], total)
+        game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)}")
 
     return effect
 
@@ -85,10 +94,13 @@ def _damage_unit(game, player, unit, amount):
 def damage_target(amount):
     def effect(game, pi):
         target = game.get("_play_target")
+        player = game["players"][pi]
         opp = game["players"][1 - pi]
-        total = amount + game["players"][pi].get("strength", 0)
+        strength = player.get("strength", 0)
+        total = amount + strength
         if not target or target == "opponent":
             _apply_damage(opp, total)
+            game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)}")
         else:
             for unit in list(opp["field"]):
                 if unit["id"] == target:
@@ -98,18 +110,23 @@ def damage_target(amount):
                     )
                     if absorber:
                         _damage_unit(game, opp, absorber, total)
+                        game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)} to {absorber['name']}")
                     else:
                         _damage_unit(game, opp, unit, total)
+                        game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)} to {unit['name']}")
                     break
     return effect
 
 
 def twist_blade():
     def effect(game, pi):
+        player = game["players"][pi]
         opp = game["players"][1 - pi]
         amount = 10 if opp.get("damaged_this_turn") else 3
-        total = amount + game["players"][pi].get("strength", 0)
+        strength = player.get("strength", 0)
+        total = amount + strength
         _apply_damage(opp, total)
+        game["log"].append(f"{player['name']}'s Twist Blade deals {_damage_log(amount, strength)}")
     return effect
 
 
