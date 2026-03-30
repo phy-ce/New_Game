@@ -29,8 +29,6 @@ def _begin_phase(game, player_index):
     for p in game["players"]:
         p["damaged_this_turn"] = False
 
-    apply_passives(game, player_index)
-
     for unit in player["field"]:
         if unit.get("is_champion"):
             attack = unit.get("attack", 0)
@@ -54,6 +52,8 @@ def _begin_phase(game, player_index):
         "cards_played": 0,
         "played_this_turn": [],
     }
+
+    apply_passives(game, player_index)
 
 
 def _end_phase(game, player_index):

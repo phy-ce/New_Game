@@ -44,6 +44,7 @@ def serialize_for_player(game, player_index):
             "field": _serialize_field(me["field"]),
             "deck_count": len(me["deck"]),
             "discard": me["discard"],
+            "passives": me["passives"],
         },
         "opponent": {
             "name": opp["name"],
@@ -58,5 +59,6 @@ def serialize_for_player(game, player_index):
             "hand_count": len(opp["hand"]),
             "deck_count": len(opp["deck"]),
             "discard": opp["discard"],
+            "passives": opp["passives"],
         },
     }
