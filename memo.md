@@ -27,4 +27,4 @@ socket.emit('debug_cmd', {lobby_code: "ABCD", cmd: "deal_damage", amount: 25})
 
 ### 카드 cid 목록
 
-`cid_table.csv` 참고.
+`cid.xml` 참고.
