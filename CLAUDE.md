@@ -45,7 +45,17 @@ frontend/
 
 ## Running Locally (Dev)
 
-Two terminals:
+프로젝트 루트에서 `./dev.sh`를 실행하면 백엔드(Flask :5000)와 프론트엔드(Vite :5173)가 동시에 뜬다.
+
+```bash
+./dev.sh
+```
+
+기존에 실행 중인 백엔드/프론트엔드가 있으면 자동으로 종료 후 재시작한다. 코드 수정 후 다시 `./dev.sh`만 실행하면 된다.
+
+Open `http://localhost:5173`. Vite proxies WebSocket traffic to Flask at `:5000`.
+
+수동으로 띄우려면 터미널 두 개:
 
 ```bash
 # Terminal 1 — backend
@@ -56,8 +66,6 @@ uv run python run.py
 cd frontend
 npm run dev
 ```
-
-Open `http://localhost:5173`. Vite proxies WebSocket traffic to Flask at `:5000`.
 
 ## Production
 
