@@ -51,7 +51,8 @@ export default function GamePage() {
   return (
     <div className="game-page">
 
-      {/* Turn info — top left */}
+      {/* Top bar */}
+      <button className="btn-leave" onClick={resetToLobby}>← Leave</button>
       <div className="turn-info">
         Turn {turn} — {is_my_turn ? 'Your Turn' : "Opponent's Turn"}
       </div>

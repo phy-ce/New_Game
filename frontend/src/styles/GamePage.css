@@ -6,10 +6,29 @@
   font-family: system-ui, sans-serif;
 }
 
-.turn-info {
+.btn-leave {
   position: fixed;
   top: 10px;
   left: 10px;
+  z-index: 10;
+  background: rgba(26, 26, 46, 0.9);
+  border: 1px solid #3a3a6a;
+  color: #aaa;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-leave:hover {
+  background: #333;
+  color: #fff;
+}
+
+.turn-info {
+  position: fixed;
+  top: 10px;
+  left: 110px;
   font-size: 1rem;
   font-weight: bold;
   color: #ddd;
