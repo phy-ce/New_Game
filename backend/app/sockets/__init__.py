@@ -1,5 +1,7 @@
 def register_handlers(socketio):
     from app.sockets.lobby import register_lobby_handlers
     from app.sockets.game import register_game_handlers
+    from app.sockets.debug import register_debug_handlers
     register_lobby_handlers(socketio)
     register_game_handlers(socketio)
+    register_debug_handlers(socketio)

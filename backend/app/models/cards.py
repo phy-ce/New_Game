@@ -4,6 +4,7 @@ from app.services.effects import gain_gold, gain_energy, draw, do_damage, summon
 
 CARD_TEMPLATES = {
     "Copper": {
+        "cid": 1,
         "name": "Copper",
         "cost": 0,
         "energy_cost": 0,
@@ -13,6 +14,7 @@ CARD_TEMPLATES = {
         "effects": [gain_gold(1)],
     },
     "Silver": {
+        "cid": 2,
         "name": "Silver",
         "cost": 3,
         "energy_cost": 0,
@@ -22,6 +24,7 @@ CARD_TEMPLATES = {
         "effects": [gain_gold(2)],
     },
     "Gold": {
+        "cid": 3,
         "name": "Gold",
         "cost": 6,
         "energy_cost": 0,
@@ -31,6 +34,7 @@ CARD_TEMPLATES = {
         "effects": [gain_gold(3)],
     },
     "Village": {
+        "cid": 4,
         "name": "Village",
         "cost": 3,
         "energy_cost": 1,
@@ -40,6 +44,7 @@ CARD_TEMPLATES = {
         "effects": [draw(1), gain_energy(1)],
     },
     "Block": {
+        "cid": 5,
         "name": "Block",
         "cost": 2,
         "energy_cost": 1,
@@ -49,6 +54,7 @@ CARD_TEMPLATES = {
         "effects": [gain_block(3)],
     },
     "Strike": {
+        "cid": 6,
         "name": "Strike",
         "cost": 1,
         "energy_cost": 1,
@@ -59,6 +65,7 @@ CARD_TEMPLATES = {
         "effects": [damage_target(4)],
     },
     "Blabber": {
+        "cid": 7,
         "name": "Blabber",
         "cost": 3,
         "energy_cost": 0,
@@ -69,6 +76,7 @@ CARD_TEMPLATES = {
         "effects": [damage_target(1), draw(1)],
     },
     "Work": {
+        "cid": 8,
         "name": "Work",
         "cost": 4,
         "energy_cost": 1,
@@ -78,6 +86,7 @@ CARD_TEMPLATES = {
         "effects": [draw(1), gain_gold(2)],
     },
     "Study": {
+        "cid": 9,
         "name": "Study",
         "cost": 5,
         "energy_cost": 1,
@@ -87,6 +96,7 @@ CARD_TEMPLATES = {
         "effects": [draw(3)],
     },
     "Twist Blade": {
+        "cid": 10,
         "name": "Twist Blade",
         "cost": 2,
         "energy_cost": 1,
@@ -96,6 +106,7 @@ CARD_TEMPLATES = {
         "effects": [twist_blade()],
     },
     "Fortify": {
+        "cid": 11,
         "name": "Fortify",
         "cost": 5,
         "energy_cost": 1,
@@ -105,6 +116,7 @@ CARD_TEMPLATES = {
         "effects": [gain_block(8), draw(2)],
     },
     "Recharge": {
+        "cid": 12,
         "name": "Recharge",
         "cost": 4,
         "energy_cost": 0,
@@ -114,6 +126,7 @@ CARD_TEMPLATES = {
         "effects": [draw(1), gain_energy(1)],
     },
     "Farm": {
+        "cid": 13,
         "name": "Farm",
         "cost": 3,
         "energy_cost": 2,
@@ -124,6 +137,7 @@ CARD_TEMPLATES = {
         "effects": [champion_place(hp=4, attack=0, effect=[heal_owner(1), gain_gold(1)])],
     },
     "Sleep": {
+        "cid": 14,
         "name": "Sleep",
         "cost": 3,
         "energy_cost": 1,
@@ -133,6 +147,7 @@ CARD_TEMPLATES = {
         "effects": [gain_passive("rest", 1)],
     },
     "Watchtower": {
+        "cid": 15,
         "name": "Watchtower",
         "cost": 5,
         "energy_cost": 2,
@@ -143,6 +158,7 @@ CARD_TEMPLATES = {
         "effects": [champion_place(hp=15, attack=2)],
     },
     "Wall": {
+        "cid": 16,
         "name": "Wall",
         "cost": 4,
         "energy_cost": 1,
@@ -153,6 +169,7 @@ CARD_TEMPLATES = {
         "effects": [champion_place(hp=8, attack=0, absorbs_damage=True)],
     },
     "Ritual": {
+        "cid": 17,
         "name": "Ritual",
         "cost": 7,
         "energy_cost": 3,
@@ -163,6 +180,7 @@ CARD_TEMPLATES = {
         "effects": [gain_passive("ritual", 1)],
     },
     "Train": {
+        "cid": 18,
         "name": "Train",
         "cost": 5,
         "energy_cost": 0,
@@ -172,6 +190,7 @@ CARD_TEMPLATES = {
         "effects": [gain_strength(1)],
     },
     "Doublestrike": {
+        "cid": 19,
         "name": "Doublestrike",
         "cost": 5,
         "energy_cost": 1,
@@ -182,6 +201,7 @@ CARD_TEMPLATES = {
         "effects": [damage_target(4), damage_target(4)],
     },
     "Bat": {
+        "cid": 20,
         "name": "Bat",
         "cost": 4,
         "energy_cost": 2,
@@ -191,6 +211,7 @@ CARD_TEMPLATES = {
         "effects": [summon("Bat"), summon("Bat")],
     },
     "Summon": {
+        "cid": 21,
         "name": "Summon Minion",
         "cost": 3,
         "energy_cost": 2,
