@@ -16,6 +16,7 @@ export default function GamePage() {
   const { gameState, error, resetToLobby, cardTemplates } = useGame();
   const { playCard, buyCard, resolveChoice, endTurn } = useSocket();
   const [targetingCard, setTargetingCard] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const turn = gameState?.turn;
   const status = gameState?.status;
@@ -52,9 +53,11 @@ export default function GamePage() {
     <div className="game-page">
 
       {/* Top bar */}
-      <button className="btn-leave" onClick={resetToLobby}>← Leave</button>
-      <div className="turn-info">
-        Turn {turn} — {is_my_turn ? 'Your Turn' : "Opponent's Turn"}
+      <div className="top-bar">
+        <button className="btn-menu" onClick={() => setMenuOpen(o => !o)}>☰</button>
+        <div className="turn-info">
+          Turn {turn} — {is_my_turn ? 'Your Turn' : "Opponent's Turn"}
+        </div>
       </div>
 
       {/* Main board */}
@@ -143,6 +146,16 @@ export default function GamePage() {
       )}
 
       <ChoiceModal pendingChoice={pending_choice} onResolve={(choice) => resolveChoice(lobby_code, choice)} />
+
+      {menuOpen && (
+        <div className="menu-overlay" onClick={() => setMenuOpen(false)}>
+          <div className="menu-modal" onClick={e => e.stopPropagation()}>
+            <div className="menu-room-code">Room: {lobby_code}</div>
+            <button className="menu-item" onClick={() => { setMenuOpen(false); resetToLobby(); }}>Leave Game</button>
+            <button className="menu-item menu-close" onClick={() => setMenuOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
