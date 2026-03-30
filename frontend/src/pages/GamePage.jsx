@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
 import { useSocket } from '../hooks/useSocket';
 import PlayerInfo from '../components/PlayerInfo';
@@ -24,9 +24,33 @@ export default function GamePage() {
   // Clear targeting when turn changes or game ends
   useEffect(() => { setTargetingCard(null); }, [turn, status]);
 
-  // ESC to cancel targeting
+  // Keyboard shortcuts
+  const gameRef = useRef();
+  gameRef.current = {
+    lobby_code: gameState?.lobby_code, is_my_turn: gameState?.is_my_turn,
+    status: gameState?.status, pending_choice: gameState?.pending_choice,
+    hand: gameState?.me?.hand, cardTemplates,
+  };
   useEffect(() => {
-    const handleKey = (e) => { if (e.key === 'Escape') setTargetingCard(null); };
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setTargetingCard(null);
+      const g = gameRef.current;
+      const canPlay = g.is_my_turn && g.status === 'playing' && !g.pending_choice;
+      if (e.key === 'E' && e.shiftKey && canPlay) {
+        endTurn(g.lobby_code);
+      }
+      const numpadMatch = e.code.match(/^Numpad(\d)$/);
+      const digit = numpadMatch ? parseInt(numpadMatch[1]) : 0;
+      if (digit >= 1 && digit <= 9 && canPlay && g.hand) {
+        const card = g.hand[digit - 1];
+        if (!card) return;
+        if (g.cardTemplates[card.cid]?.needs_target) {
+          setTargetingCard(card.id);
+        } else {
+          playCard(g.lobby_code, card.id);
+        }
+      }
+    };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
