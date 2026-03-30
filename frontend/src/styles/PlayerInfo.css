@@ -1,4 +1,6 @@
 .player-info {
+  position: relative;
+  overflow: visible;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -125,6 +127,29 @@
   border-radius: 4px;
   font-size: 0.9rem;
   color: #ddd;
+}
+
+.pi-passive-row {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pi-passive-row:hover {
+  background: #33335a;
+}
+
+.pi-passive-expanded {
+  background: #33335a;
+}
+
+.pi-passive-desc {
+  padding: 6px 12px 10px;
+  font-size: 0.8rem;
+  color: #aaa;
+  line-height: 1.4;
+  background: #252548;
+  border-radius: 0 0 4px 4px;
+  margin-top: -4px;
 }
 
 .pi-passive-name {

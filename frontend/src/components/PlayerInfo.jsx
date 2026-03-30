@@ -1,8 +1,12 @@
 import { useState } from 'react';
+import { useGame } from '../context/GameContext';
+import FloatingDamage from './FloatingDamage';
 import '../styles/PlayerInfo.css';
 
 export default function PlayerInfo({ player, isMe, onTarget, isSelected }) {
+  const { passiveInfo } = useGame();
   const [showPassives, setShowPassives] = useState(false);
+  const [expandedPassive, setExpandedPassive] = useState(null);
   const hpPercent = Math.max(0, (player.hp / player.max_hp) * 100);
   const passives = player.passives || [];
 
@@ -11,6 +15,7 @@ export default function PlayerInfo({ player, isMe, onTarget, isSelected }) {
       className={`player-info ${isMe ? 'player-me' : 'player-opponent'} ${onTarget ? 'targetable' : ''} ${isSelected ? 'target-selected' : ''}`}
       onClick={onTarget ? (e) => { e.stopPropagation(); onTarget(); } : undefined}
     >
+      <FloatingDamage hp={player.hp} direction={isMe ? 'up' : 'down'} />
       <span className="pi-name">{player.name}</span>
       <div className="pi-hp-row">
         <div className="pi-hp-bar">
@@ -38,17 +43,25 @@ export default function PlayerInfo({ player, isMe, onTarget, isSelected }) {
       </div>
 
       {showPassives && (
-        <div className="ps-overlay" onClick={() => setShowPassives(false)}>
+        <div className="ps-overlay" onClick={() => { setShowPassives(false); setExpandedPassive(null); }}>
           <div className="ps-modal" onClick={e => e.stopPropagation()}>
             <div className="ps-modal-header">
               <span>{player.name}'s Passives</span>
-              <button className="ps-close" onClick={() => setShowPassives(false)}>✕</button>
+              <button className="ps-close" onClick={() => { setShowPassives(false); setExpandedPassive(null); }}>✕</button>
             </div>
             <div className="pi-passive-list">
               {passives.map((p, i) => (
-                <div key={i} className="pi-passive-row">
-                  <span className="pi-passive-name">{p.name}</span>
-                  <span className="pi-passive-stacks">x{p.stacks}</span>
+                <div key={i}>
+                  <div
+                    className={`pi-passive-row ${expandedPassive === p.name ? 'pi-passive-expanded' : ''}`}
+                    onClick={() => setExpandedPassive(expandedPassive === p.name ? null : p.name)}
+                  >
+                    <span className="pi-passive-name">{p.name}</span>
+                    <span className="pi-passive-stacks">x{p.stacks}</span>
+                  </div>
+                  {expandedPassive === p.name && passiveInfo[p.name] && (
+                    <div className="pi-passive-desc">{passiveInfo[p.name].description}</div>
+                  )}
                 </div>
               ))}
             </div>

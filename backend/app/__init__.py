@@ -20,6 +20,11 @@ def create_app():
         from app.models.units import get_client_templates
         return jsonify(get_client_templates())
 
+    @app.route('/api/passive-info')
+    def passive_info():
+        from app.services.effects import get_passive_info
+        return jsonify(get_passive_info())
+
     @app.route('/')
     def index():
         return send_from_directory(app.static_folder, 'index.html')

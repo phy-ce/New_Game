@@ -14,10 +14,12 @@ export function GameProvider({ children }) {
   const [lobbyPlayers, setLobbyPlayers] = useState(null);
   const [cardTemplates, setCardTemplates] = useState({});
   const [unitTemplates, setUnitTemplates] = useState({});
+  const [passiveInfo, setPassiveInfo] = useState({});
 
   useEffect(() => {
     fetch('/api/card-templates').then(r => r.json()).then(setCardTemplates);
     fetch('/api/unit-templates').then(r => r.json()).then(setUnitTemplates);
+    fetch('/api/passive-info').then(r => r.json()).then(setPassiveInfo);
   }, []);
 
   // Persist to localStorage so refresh can reconnect
@@ -61,6 +63,7 @@ export function GameProvider({ children }) {
     lobbyPlayers, setLobbyPlayers,
     cardTemplates,
     unitTemplates,
+    passiveInfo,
     resetToLobby,
   };
 
