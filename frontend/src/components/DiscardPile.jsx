@@ -1,58 +1,45 @@
-import { useState, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { useGame } from '../context/GameContext';
+import Card from './Card';
 import '../styles/Pile.css';
-
-const POPUP_WIDTH = 120;
-const GAP = 8;
-
-function getPopupStyle(rect) {
-  const left = Math.max(8, Math.min(
-    rect.left + rect.width / 2 - POPUP_WIDTH / 2,
-    window.innerWidth - POPUP_WIDTH - 8
-  ));
-  if (rect.top < 220) {
-    return { top: rect.bottom + GAP, left };
-  }
-  return { top: rect.top - GAP, left, transform: 'translateY(-100%)' };
-}
 
 export default function DiscardPile({ discard }) {
   const { cardTemplates } = useGame();
-  const [popupStyle, setPopupStyle] = useState(null);
-  const pileRef = useRef(null);
+  const [open, setOpen] = useState(false);
   const top = discard[discard.length - 1];
 
-  const handleMouseEnter = () => {
-    if (!pileRef.current) return;
-    setPopupStyle(getPopupStyle(pileRef.current.getBoundingClientRect()));
-  };
-
   return (
-    <div
-      ref={pileRef}
-      className="pile discard-pile"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={() => setPopupStyle(null)}
-    >
-      {top ? (
-        <div className="pile-card pile-faceup">
-          <div className="pile-card-name">{top.name}</div>
-          <div className="pile-card-type">{cardTemplates[top.cid]?.type}</div>
-        </div>
-      ) : (
-        <div className="pile-card pile-empty" />
-      )}
-      <div className="pile-count">{discard.length}</div>
+    <>
+      <div
+        className="pile discard-pile"
+        onClick={() => discard.length > 0 && setOpen(true)}
+      >
+        {top ? (
+          <div className="pile-card pile-faceup">
+            <div className="pile-card-name">{top.name}</div>
+            <div className="pile-card-type">{cardTemplates[top.cid]?.type}</div>
+          </div>
+        ) : (
+          <div className="pile-card pile-empty" />
+        )}
+        <div className="pile-count">{discard.length}</div>
+      </div>
 
-      {popupStyle && discard.length > 0 && createPortal(
-        <div className="pile-popup pile-popup-portal" style={popupStyle}>
-          {[...discard].reverse().map((card, i) => (
-            <div key={i} className="pile-popup-row">{card.name}</div>
-          ))}
-        </div>,
-        document.body
+      {open && (
+        <div className="ps-overlay" onClick={() => setOpen(false)}>
+          <div className="ps-modal" onClick={e => e.stopPropagation()}>
+            <div className="ps-modal-header">
+              <span>Discard ({discard.length})</span>
+              <button className="ps-close" onClick={() => setOpen(false)}>✕</button>
+            </div>
+            <div className="ps-modal-cards">
+              {[...discard].reverse().map((card, i) => (
+                <Card key={i} card={card} />
+              ))}
+            </div>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }
