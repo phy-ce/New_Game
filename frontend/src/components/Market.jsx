@@ -20,7 +20,9 @@ function getTooltipStyle(rect) {
 export default function Market({ market, onBuy, canBuy, currentGold }) {
   const { cardTemplates } = useGame();
   const [tooltip, setTooltip] = useState(null); // { cid, style }
-  const piles = Object.entries(market);
+  const FIXED_CIDS = new Set(['C00004', 'C00005']);
+  const fixedPiles = Object.entries(market).filter(([cid]) => FIXED_CIDS.has(cid));
+  const normalPiles = Object.entries(market).filter(([cid]) => !FIXED_CIDS.has(cid));
 
   const handleMouseEnter = useCallback((e, cid) => {
     setTooltip({ cid, style: getTooltipStyle(e.currentTarget.getBoundingClientRect()) });
@@ -32,7 +34,28 @@ export default function Market({ market, onBuy, canBuy, currentGold }) {
     <div className="market">
       <div className="market-label">Market</div>
       <div className="market-piles">
-        {piles.map(([cid, pile]) => {
+        {fixedPiles.map(([cid, pile]) => {
+          const template = cardTemplates[cid] || {};
+          const affordable = canBuy && pile.count > 0 && currentGold >= template.cost;
+          return (
+            <div
+              key={cid}
+              className={`market-pile market-pile-fixed ${affordable ? 'affordable' : ''} ${pile.count === 0 ? 'sold-out' : ''}`}
+              onClick={affordable ? () => onBuy(cid) : undefined}
+              onMouseEnter={(e) => handleMouseEnter(e, cid)}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div className="mp-gold-cost">◈ {template.cost}</div>
+              <div className="mp-image">{template.name?.charAt(0)}</div>
+              <div className="mp-name">{template.name}</div>
+              <div className="mp-effect">{template.effect}</div>
+              <div className="mp-energy-cost">◆ {template.energy_cost}</div>
+              <div className="mp-count">x{pile.count}</div>
+            </div>
+          );
+        })}
+        <div className="market-divider" />
+        {normalPiles.map(([cid, pile]) => {
           const template = cardTemplates[cid] || {};
           const affordable = canBuy && pile.count > 0 && currentGold >= template.cost;
           return (

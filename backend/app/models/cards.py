@@ -225,10 +225,14 @@ CARD_TEMPLATES = {
     },
 }
 
-# Market supply: starter cards (C00001 Strike, C00002 Block, C00003 Copper) are not in the market
-MARKET_SUPPLY = {
+# Fixed market: always available
+MARKET_FIXED = {
     "C00004": 20,   # Silver
     "C00005": 15,   # Gold
+}
+
+# General market pool: randomly selected each game
+MARKET_POOL = {
     "C00006": 10,   # Twist Blade
     "C00007": 10,   # Heavy Strike
     "C00008": 10,   # Body Slam
@@ -280,6 +284,9 @@ def create_starter_deck():
 
 
 def create_market():
-    """Create a market with 12 randomly selected cards from the full card pool."""
-    selected = random.sample(list(MARKET_SUPPLY.keys()), 12)
-    return {cid: {"count": MARKET_SUPPLY[cid]} for cid in selected}
+    """Create a market with fixed cards (Silver/Gold) + 12 randomly selected cards."""
+    market = {cid: {"count": count} for cid, count in MARKET_FIXED.items()}
+    selected = random.sample(list(MARKET_POOL.keys()), 12)
+    for cid in selected:
+        market[cid] = {"count": MARKET_POOL[cid]}
+    return market
