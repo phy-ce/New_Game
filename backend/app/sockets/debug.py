@@ -6,13 +6,6 @@ from app.services.effects import _apply_damage
 from app.sockets.game import broadcast_state
 
 
-def _find_template_by_cid(cid):
-    for name, t in CARD_TEMPLATES.items():
-        if t["cid"] == cid:
-            return name
-    return None
-
-
 def register_debug_handlers(socketio):
 
     @socketio.on('debug_cmd')
@@ -31,12 +24,11 @@ def register_debug_handlers(socketio):
 
         if cmd == "add_card":
             cid = data.get("cid")
-            card_name = _find_template_by_cid(cid)
-            if not card_name:
+            if cid not in CARD_TEMPLATES:
                 emit('error', {"message": f"Unknown cid: {cid}"})
                 return
-            player["hand"].append(create_card(card_name))
-            game["log"].append(f"[DEBUG] {player['name']} added {card_name} to hand")
+            player["hand"].append(create_card(cid))
+            game["log"].append(f"[DEBUG] {player['name']} added {CARD_TEMPLATES[cid]['name']} to hand")
 
         elif cmd == "set_stat":
             stat = data.get("stat")

@@ -28,7 +28,7 @@ def serialize_for_player(game, player_index):
             else None
         ),
         "log": game["log"][-50:],  # Last 50 log entries
-        "market": {name: {"count": pile["count"]} for name, pile in game["market"].items()},
+        "market": {cid: {"count": pile["count"]} for cid, pile in game["market"].items()},
         "turn_state": game["turn_state"],
         "pending_choice": game["pending_choice"],
         "me": {

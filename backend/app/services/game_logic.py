@@ -106,7 +106,7 @@ def play_card(game, player_index, card_id, target=None):
     if card is None:
         return False, "Card not in hand"
 
-    energy_cost = CARD_TEMPLATES[card["name"]]["energy_cost"]
+    energy_cost = CARD_TEMPLATES[card["cid"]]["energy_cost"]
     if player["energy"] < energy_cost:
         player["hand"].append(card)  # Put it back
         return False, "Not enough energy"
@@ -123,22 +123,22 @@ def play_card(game, player_index, card_id, target=None):
     turn["played_this_turn"].insert(0, card)
 
     # Champions stay on field; exhausted cards disappear; everything else goes to discard
-    template = CARD_TEMPLATES[card["name"]]
+    template = CARD_TEMPLATES[card["cid"]]
     if not template.get("champion") and not template.get("exhaust"):
         player["discard"].append(card)
 
     game["log"].append(
-        f"{player['name']} plays {card['name']} ({CARD_TEMPLATES[card['name']]['effect']})"
+        f"{player['name']} plays {card['name']} ({CARD_TEMPLATES[card['cid']]['effect']})"
     )
     return True, None
 
 
 def _apply_card_effect(game, player_index, card):
-    for fn in CARD_TEMPLATES[card["name"]].get("effects", []):
+    for fn in CARD_TEMPLATES[card["cid"]].get("effects", []):
         fn(game, player_index)
 
 
-def buy_card(game, player_index, card_name):
+def buy_card(game, player_index, cid):
     """Buy a card from the market. Returns (success, error)."""
     if game["pending_choice"] is not None:
         return False, "Must resolve pending choice first"
@@ -148,23 +148,24 @@ def buy_card(game, player_index, card_name):
     player = game["players"][player_index]
     turn = game["turn_state"]
 
-    if card_name not in game["market"]:
+    if cid not in game["market"]:
         return False, "Card not in market"
 
-    pile = game["market"][card_name]
+    pile = game["market"][cid]
     if pile["count"] <= 0:
         return False, "Card is sold out"
 
-    cost = CARD_TEMPLATES[card_name]["cost"]
+    cost = CARD_TEMPLATES[cid]["cost"]
     if player["gold"] < cost:
         return False, f"Not enough gold (need {cost}, have {player['gold']})"
 
     player["gold"] -= cost
     pile["count"] -= 1
 
-    new_card = create_card(card_name)
+    new_card = create_card(cid)
     player["discard"].append(new_card)
 
+    card_name = CARD_TEMPLATES[cid]["name"]
     game["log"].append(f"{player['name']} buys {card_name} (cost {cost})")
     return True, None
 
