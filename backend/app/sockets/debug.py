@@ -42,9 +42,10 @@ def register_debug_handlers(socketio):
 
         elif cmd == "deal_damage":
             amount = data.get("amount", 0)
-            opponent = game["players"][1 - player_idx]
-            _apply_damage(opponent, int(amount))
-            game["log"].append(f"[DEBUG] dealt {amount} damage to {opponent['name']}")
+            target = data.get("target", "opponent")
+            target_player = player if target == "self" else game["players"][1 - player_idx]
+            _apply_damage(target_player, int(amount))
+            game["log"].append(f"[DEBUG] dealt {amount} damage to {target_player['name']}")
 
         else:
             emit('error', {"message": f"Unknown debug command: {cmd}"})
