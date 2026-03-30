@@ -1,0 +1,26 @@
+.floating-damage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #f44;
+  pointer-events: none;
+  z-index: 50;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  animation: float-away 0.8s ease-out forwards;
+}
+
+@keyframes float-away {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate(0, 0);
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(var(--float-x), var(--float-y));
+  }
+}

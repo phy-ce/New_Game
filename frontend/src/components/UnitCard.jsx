@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useGame } from '../context/GameContext';
+import FloatingDamage from './FloatingDamage';
 import '../styles/UnitCard.css';
 
 function getTooltipStyle(anchorRect, tooltipWidth) {
@@ -38,6 +39,7 @@ export default function UnitCard({ unit, stackCount, onTarget, isSelected }) {
       onMouseLeave={handleMouseLeave}
       onClick={onTarget ? (e) => { e.stopPropagation(); onTarget(); } : undefined}
     >
+      <FloatingDamage hp={unit.current_hp} />
       {stackCount > 1 && <div className="unit-stack-count">x{stackCount}</div>}
       <div className="unit-image">{unit.name.charAt(0)}</div>
       <div className="unit-name">{unit.name}</div>

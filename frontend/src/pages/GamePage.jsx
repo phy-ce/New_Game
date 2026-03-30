@@ -20,9 +20,24 @@ export default function GamePage() {
   const targetIdxRef = useRef(0);
   const targetingCardRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [shake, setShake] = useState('');
+  const prevHpRef = useRef(null);
 
   const turn = gameState?.turn;
   const status = gameState?.status;
+
+  // Screen shake on HP loss
+  const myHp = gameState?.me?.hp;
+  useEffect(() => {
+    if (prevHpRef.current !== null && myHp !== undefined && myHp < prevHpRef.current) {
+      const dmg = prevHpRef.current - myHp;
+      const intensity = dmg >= 10 ? 'shake-heavy' : dmg >= 5 ? 'shake-medium' : 'shake-light';
+      setShake(intensity);
+      const timer = setTimeout(() => setShake(''), 400);
+      return () => clearTimeout(timer);
+    }
+    prevHpRef.current = myHp ?? null;
+  }, [myHp]);
 
   // Clear targeting when turn changes or game ends
   useEffect(() => { setTargetingCard(null); }, [turn, status]);
@@ -124,7 +139,7 @@ export default function GamePage() {
   };
 
   return (
-    <div className="game-page" onClick={isTargeting ? () => setTargetingCard(null) : undefined}>
+    <div className={`game-page ${shake}`} onClick={isTargeting ? () => setTargetingCard(null) : undefined}>
 
       {/* Top bar */}
       <div className="top-bar">
