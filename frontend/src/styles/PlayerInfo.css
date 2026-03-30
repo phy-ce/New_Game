@@ -147,3 +147,11 @@
   from { outline-color: #e55; }
   to   { outline-color: #f99; }
 }
+
+.player-info.target-selected {
+  transform: translateY(-4px);
+  border-color: #cc4;
+  box-shadow: 0 4px 16px rgba(220, 200, 60, 0.5);
+  outline: none;
+  animation: none;
+}

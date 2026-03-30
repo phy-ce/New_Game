@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import '../styles/PlayerInfo.css';
 
-export default function PlayerInfo({ player, isMe, onTarget }) {
+export default function PlayerInfo({ player, isMe, onTarget, isSelected }) {
   const [showPassives, setShowPassives] = useState(false);
   const hpPercent = Math.max(0, (player.hp / player.max_hp) * 100);
   const passives = player.passives || [];
 
   return (
     <div
-      className={`player-info ${isMe ? 'player-me' : 'player-opponent'} ${onTarget ? 'targetable' : ''}`}
+      className={`player-info ${isMe ? 'player-me' : 'player-opponent'} ${onTarget ? 'targetable' : ''} ${isSelected ? 'target-selected' : ''}`}
       onClick={onTarget ? (e) => { e.stopPropagation(); onTarget(); } : undefined}
     >
       <span className="pi-name">{player.name}</span>

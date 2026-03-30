@@ -16,6 +16,9 @@ export default function GamePage() {
   const { gameState, error, resetToLobby, cardTemplates } = useGame();
   const { playCard, buyCard, resolveChoice, endTurn } = useSocket();
   const [targetingCard, setTargetingCard] = useState(null);
+  const [selectedTargetIdx, setSelectedTargetIdx] = useState(0);
+  const targetIdxRef = useRef(0);
+  const targetingCardRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const turn = gameState?.turn;
@@ -23,25 +26,64 @@ export default function GamePage() {
 
   // Clear targeting when turn changes or game ends
   useEffect(() => { setTargetingCard(null); }, [turn, status]);
+  // Reset selection when entering targeting mode
+  useEffect(() => { setSelectedTargetIdx(0); targetIdxRef.current = 0; }, [targetingCard]);
+  targetingCardRef.current = targetingCard;
 
   // Keyboard shortcuts
   const gameRef = useRef();
+  const targetList = targetingCard
+    ? ['opponent', ...(gameState?.opponent?.field?.map(u => u.id) || [])]
+    : [];
   gameRef.current = {
     lobby_code: gameState?.lobby_code, is_my_turn: gameState?.is_my_turn,
     status: gameState?.status, pending_choice: gameState?.pending_choice,
-    hand: gameState?.me?.hand, cardTemplates,
+    hand: gameState?.me?.hand, cardTemplates, targetList,
   };
   useEffect(() => {
     const handleKey = (e) => {
-      if (e.key === 'Escape') setTargetingCard(null);
+      if (e.key === 'Escape') { setTargetingCard(null); return; }
       const g = gameRef.current;
       const canPlay = g.is_my_turn && g.status === 'playing' && !g.pending_choice;
+
+      // Target selection with arrow keys + enter
+      if (g.targetList.length > 0) {
+        const isUp = e.code === 'ArrowUp' || e.code === 'Numpad8';
+        const isDown = e.code === 'ArrowDown' || e.code === 'Numpad2';
+        const isLeft = e.code === 'ArrowLeft' || e.code === 'Numpad4';
+        const isRight = e.code === 'ArrowRight' || e.code === 'Numpad6';
+        const isConfirm = e.code === 'Enter' || e.code === 'NumpadEnter';
+        if (isUp || isLeft) {
+          e.preventDefault();
+          const next = (targetIdxRef.current - 1 + g.targetList.length) % g.targetList.length;
+          targetIdxRef.current = next;
+          setSelectedTargetIdx(next);
+          return;
+        }
+        if (isDown || isRight) {
+          e.preventDefault();
+          const next = (targetIdxRef.current + 1) % g.targetList.length;
+          targetIdxRef.current = next;
+          setSelectedTargetIdx(next);
+          return;
+        }
+        if (isConfirm) {
+          e.preventDefault();
+          const targetId = g.targetList[targetIdxRef.current];
+          if (targetId && targetingCardRef.current) {
+            playCard(g.lobby_code, targetingCardRef.current, targetId);
+            setTargetingCard(null);
+          }
+          return;
+        }
+      }
+
+      if (g.targetList.length > 0) return;
+
       if (e.key === 'E' && e.shiftKey && canPlay) {
         endTurn(g.lobby_code);
       }
-      const numpadMatch = e.code.match(/^Numpad(\d)$/);
-      const digit = numpadMatch ? parseInt(numpadMatch[1]) : 0;
-      if (digit >= 1 && digit <= 9 && canPlay && g.hand) {
+      if (e.key >= '1' && e.key <= '9' && !e.shiftKey && !e.ctrlKey && !e.altKey && canPlay && g.hand) {
         const card = g.hand[digit - 1];
         if (!card) return;
         if (g.cardTemplates[card.cid]?.needs_target) {
@@ -65,6 +107,7 @@ export default function GamePage() {
   const canPlayCards = is_my_turn && status === 'playing' && !pending_choice && !targetingCard;
   const canBuy = is_my_turn && status === 'playing' && !pending_choice && !targetingCard;
   const isTargeting = !!targetingCard;
+  const selectedTargetId = isTargeting ? targetList[selectedTargetIdx] : null;
 
   const handlePlayCard = (cardId) => {
     const card = me.hand.find(c => c.id === cardId);
@@ -96,7 +139,7 @@ export default function GamePage() {
 
         <div className={`opponent-section ${isTargeting ? 'targeting-active' : ''}`}>
           <div className="player-controls">
-            <PlayerInfo player={opponent} isMe={false} onTarget={isTargeting ? () => handleTarget('opponent') : undefined} />
+            <PlayerInfo player={opponent} isMe={false} onTarget={isTargeting ? () => handleTarget('opponent') : undefined} isSelected={selectedTargetId === 'opponent'} />
             <div className="resource-bar">
               <span className="rb-res rb-energy">◆ {opponent.energy}/{opponent.max_energy}</span>
               <span className="rb-res rb-gold">◈ {opponent.gold}</span>
@@ -110,7 +153,7 @@ export default function GamePage() {
         </div>
 
         <div className="battle-field">
-          <Field units={opponent.field} isMe={false} onTargetUnit={isTargeting ? handleTarget : undefined} />
+          <Field units={opponent.field} isMe={false} onTargetUnit={isTargeting ? handleTarget : undefined} selectedTargetId={selectedTargetId} />
           <div className="field-divider" />
           <Field units={me.field} isMe={true} />
         </div>

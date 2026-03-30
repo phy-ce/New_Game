@@ -15,7 +15,7 @@ function getTooltipStyle(anchorRect, tooltipWidth) {
   return { top: anchorRect.top - GAP, left, transform: 'translateY(-100%)' };
 }
 
-export default function UnitCard({ unit, stackCount, onTarget }) {
+export default function UnitCard({ unit, stackCount, onTarget, isSelected }) {
   const { unitTemplates } = useGame();
   const [tooltipStyle, setTooltipStyle] = useState(null);
   const cardRef = useRef(null);
@@ -33,7 +33,7 @@ export default function UnitCard({ unit, stackCount, onTarget }) {
   return (
     <div
       ref={cardRef}
-      className={`unit-card ${onTarget ? 'targetable' : ''}`}
+      className={`unit-card ${onTarget ? 'targetable' : ''} ${isSelected ? 'target-selected' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onTarget ? (e) => { e.stopPropagation(); onTarget(); } : undefined}

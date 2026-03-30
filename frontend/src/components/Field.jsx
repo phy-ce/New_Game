@@ -5,7 +5,7 @@ import '../styles/Field.css';
 
 const SLOT_LIMIT = 7;
 
-export default function Field({ units, isMe, onTargetUnit }) {
+export default function Field({ units, isMe, onTargetUnit, selectedTargetId }) {
   const [expandedStack, setExpandedStack] = useState(null);
   const prevIdsRef = useRef(new Set());
   const [newIds, setNewIds] = useState(new Set());
@@ -55,6 +55,7 @@ export default function Field({ units, isMe, onTargetUnit }) {
             unit={unit}
             isNew={newIds.has(unit.id)}
             onTarget={onTargetUnit ? () => onTargetUnit(unit.id) : undefined}
+            isSelected={selectedTargetId === unit.id}
           />
         ))}
       </div>
