@@ -84,7 +84,7 @@ export default function GamePage() {
         endTurn(g.lobby_code);
       }
       if (e.key >= '1' && e.key <= '9' && !e.shiftKey && !e.ctrlKey && !e.altKey && canPlay && g.hand) {
-        const card = g.hand[digit - 1];
+        const card = g.hand[parseInt(e.key) - 1];
         if (!card) return;
         if (g.cardTemplates[card.cid]?.needs_target) {
           setTargetingCard(card.id);
