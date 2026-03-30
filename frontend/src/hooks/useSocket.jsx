@@ -106,10 +106,10 @@ export function SocketProvider({ children }) {
     socketRef.current?.emit('play_card', payload);
   }, []);
 
-  const buyCard = useCallback((lobbyCode, cardName) => {
+  const buyCard = useCallback((lobbyCode, cid) => {
     socketRef.current?.emit('buy_card', {
       lobby_code: lobbyCode,
-      card_name: cardName,
+      cid,
     });
   }, []);
 

@@ -36,7 +36,7 @@ export default function GamePage() {
 
   const handlePlayCard = (cardId) => {
     const card = me.hand.find(c => c.id === cardId);
-    if (card && cardTemplates[card.name]?.needs_target) {
+    if (card && cardTemplates[card.cid]?.needs_target) {
       setTargetingCard(cardId);
     } else {
       playCard(lobby_code, cardId);
@@ -123,7 +123,7 @@ export default function GamePage() {
       <div className="right-sidebar">
         <Market
           market={market}
-          onBuy={(cardName) => buyCard(lobby_code, cardName)}
+          onBuy={(cid) => buyCard(lobby_code, cid)}
           canBuy={canBuy}
           currentGold={me.gold}
         />
