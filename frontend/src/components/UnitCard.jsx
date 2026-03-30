@@ -36,7 +36,7 @@ export default function UnitCard({ unit, stackCount, onTarget }) {
       className={`unit-card ${onTarget ? 'targetable' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={onTarget || undefined}
+      onClick={onTarget ? (e) => { e.stopPropagation(); onTarget(); } : undefined}
     >
       {stackCount > 1 && <div className="unit-stack-count">x{stackCount}</div>}
       <div className="unit-image">{unit.name.charAt(0)}</div>

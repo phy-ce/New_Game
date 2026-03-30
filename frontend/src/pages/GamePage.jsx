@@ -24,6 +24,13 @@ export default function GamePage() {
   // Clear targeting when turn changes or game ends
   useEffect(() => { setTargetingCard(null); }, [turn, status]);
 
+  // ESC to cancel targeting
+  useEffect(() => {
+    const handleKey = (e) => { if (e.key === 'Escape') setTargetingCard(null); };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
   if (!gameState) return null;
 
   const {
@@ -50,7 +57,7 @@ export default function GamePage() {
   };
 
   return (
-    <div className="game-page">
+    <div className="game-page" onClick={isTargeting ? () => setTargetingCard(null) : undefined}>
 
       {/* Top bar */}
       <div className="top-bar">
@@ -136,7 +143,7 @@ export default function GamePage() {
       {error && <div className="game-error">{error}</div>}
 
       {status === 'finished' && (
-        <div className="game-over-overlay">
+        <div className={`game-over-overlay ${winner_name === me.name ? 'go-win-overlay' : 'go-loss-overlay'}`}>
           <div className={`game-over-box ${winner_name === me.name ? 'go-win' : 'go-loss'}`}>
             <h2>{winner_name === me.name ? 'Victory!' : 'Defeat'}</h2>
             <p className="go-detail">{winner_name} wins!</p>

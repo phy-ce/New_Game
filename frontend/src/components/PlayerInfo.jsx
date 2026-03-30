@@ -9,7 +9,7 @@ export default function PlayerInfo({ player, isMe, onTarget }) {
   return (
     <div
       className={`player-info ${isMe ? 'player-me' : 'player-opponent'} ${onTarget ? 'targetable' : ''}`}
-      onClick={onTarget || undefined}
+      onClick={onTarget ? (e) => { e.stopPropagation(); onTarget(); } : undefined}
     >
       <span className="pi-name">{player.name}</span>
       <div className="pi-hp-row">
