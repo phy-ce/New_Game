@@ -19,11 +19,11 @@ function getTooltipStyle(rect) {
 
 export default function Market({ market, onBuy, canBuy, currentGold }) {
   const { cardTemplates } = useGame();
-  const [tooltip, setTooltip] = useState(null); // { name, style }
+  const [tooltip, setTooltip] = useState(null); // { cid, style }
   const piles = Object.entries(market);
 
-  const handleMouseEnter = useCallback((e, name) => {
-    setTooltip({ name, style: getTooltipStyle(e.currentTarget.getBoundingClientRect()) });
+  const handleMouseEnter = useCallback((e, cid) => {
+    setTooltip({ cid, style: getTooltipStyle(e.currentTarget.getBoundingClientRect()) });
   }, []);
 
   const handleMouseLeave = useCallback(() => setTooltip(null), []);
@@ -32,20 +32,20 @@ export default function Market({ market, onBuy, canBuy, currentGold }) {
     <div className="market">
       <div className="market-label">Market</div>
       <div className="market-piles">
-        {piles.map(([name, pile]) => {
-          const template = cardTemplates[name] || {};
+        {piles.map(([cid, pile]) => {
+          const template = cardTemplates[cid] || {};
           const affordable = canBuy && pile.count > 0 && currentGold >= template.cost;
           return (
             <div
-              key={name}
+              key={cid}
               className={`market-pile ${affordable ? 'affordable' : ''} ${pile.count === 0 ? 'sold-out' : ''}`}
-              onClick={affordable ? () => onBuy(name) : undefined}
-              onMouseEnter={(e) => handleMouseEnter(e, name)}
+              onClick={affordable ? () => onBuy(cid) : undefined}
+              onMouseEnter={(e) => handleMouseEnter(e, cid)}
               onMouseLeave={handleMouseLeave}
             >
               <div className="mp-gold-cost">◈ {template.cost}</div>
-              <div className="mp-image">{name.charAt(0)}</div>
-              <div className="mp-name">{name}</div>
+              <div className="mp-image">{template.name?.charAt(0)}</div>
+              <div className="mp-name">{template.name}</div>
               <div className="mp-effect">{template.effect}</div>
               <div className="mp-energy-cost">◆ {template.energy_cost}</div>
               <div className="mp-count">x{pile.count}</div>
@@ -56,13 +56,13 @@ export default function Market({ market, onBuy, canBuy, currentGold }) {
 
       {tooltip && createPortal(
         <div className="mp-inspector mp-inspector-portal" style={tooltip.style}>
-          <div className="mpi-name">{tooltip.name}</div>
-          <div className="mpi-type">{cardTemplates[tooltip.name]?.type}</div>
+          <div className="mpi-name">{cardTemplates[tooltip.cid]?.name}</div>
+          <div className="mpi-type">{cardTemplates[tooltip.cid]?.type}</div>
           <div className="mpi-costs">
-            <span className="mpi-gold">◈ {cardTemplates[tooltip.name]?.cost}</span>
-            <span className="mpi-energy">◆ {cardTemplates[tooltip.name]?.energy_cost} to play</span>
+            <span className="mpi-gold">◈ {cardTemplates[tooltip.cid]?.cost}</span>
+            <span className="mpi-energy">◆ {cardTemplates[tooltip.cid]?.energy_cost} to play</span>
           </div>
-          <div className="mpi-effect">{cardTemplates[tooltip.name]?.effect}</div>
+          <div className="mpi-effect">{cardTemplates[tooltip.cid]?.effect}</div>
         </div>,
         document.body
       )}

@@ -33,7 +33,7 @@ export default function Card({ card, onClick, isPlayable, faceDown, isNew }) {
     return <div className="card card-back" />;
   }
 
-  const template = cardTemplates[card.name] || {};
+  const template = cardTemplates[card.cid] || {};
   const typeClass = template.type === 'treasure' ? 'card-treasure' : 'card-action';
 
   return (

@@ -38,7 +38,7 @@ export default function DiscardPile({ discard }) {
       {top ? (
         <div className="pile-card pile-faceup">
           <div className="pile-card-name">{top.name}</div>
-          <div className="pile-card-type">{cardTemplates[top.name]?.type}</div>
+          <div className="pile-card-type">{cardTemplates[top.cid]?.type}</div>
         </div>
       ) : (
         <div className="pile-card pile-empty" />
