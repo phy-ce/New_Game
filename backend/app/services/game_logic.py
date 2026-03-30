@@ -39,8 +39,13 @@ def _begin_phase(game, player_index):
             unit_effect = template.get("effect")
 
         if attack > 0:
-            _apply_damage(opponent, attack)
-            game["log"].append(f"{unit['name']} attacks for {attack}")
+            hp_dmg, blocked, abs_name = _apply_damage(opponent, attack)
+            log_msg = f"{unit['name']} attacks for {attack}"
+            if abs_name:
+                log_msg += f" [absorbed by {abs_name}]"
+            elif blocked > 0:
+                log_msg += f" [{blocked} blocked]"
+            game["log"].append(log_msg)
         if unit_effect:
             fns = unit_effect if isinstance(unit_effect, list) else [unit_effect]
             for fn in fns:

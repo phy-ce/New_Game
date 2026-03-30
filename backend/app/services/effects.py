@@ -31,28 +31,38 @@ def draw(amount):
 
 
 def _apply_damage(player, amount):
-    """Apply damage to a player, consuming block first. Redirects to absorbing champion if present."""
+    """Apply damage to a player, consuming block first. Redirects to absorbing champion if present.
+    Returns (actual_hp_damage, blocked_amount, absorber_name or None)."""
     for unit in list(player["field"]):
         if unit.get("absorbs_damage"):
             unit["current_hp"] -= amount
+            name = unit["name"]
             if unit["current_hp"] <= 0:
                 player["field"].remove(unit)
                 if unit.get("is_champion"):
                     player["discard"].append(unit["source_card"])
-            return
+            return 0, 0, name
+    blocked = 0
     if player.get("block", 0) > 0:
-        absorbed = min(player["block"], amount)
-        player["block"] -= absorbed
-        amount -= absorbed
+        blocked = min(player["block"], amount)
+        player["block"] -= blocked
+        amount -= blocked
     if amount > 0:
         player["hp"] -= amount
         player["damaged_this_turn"] = True
+    return amount, blocked, None
 
 
-def _damage_log(base, strength):
+def _damage_log(base, strength, blocked=0, absorber=None):
+    total = base + strength
+    parts = f"{total} damage"
     if strength > 0:
-        return f"{base + strength} damage ({base}+{strength})"
-    return f"{base} damage"
+        parts = f"{total} damage ({base}+{strength})"
+    if absorber:
+        parts += f" [absorbed by {absorber}]"
+    elif blocked > 0:
+        parts += f" [{blocked} blocked]"
+    return parts
 
 
 def do_damage(amount):
@@ -60,8 +70,8 @@ def do_damage(amount):
         player = game["players"][pi]
         strength = player.get("strength", 0)
         total = amount + strength
-        _apply_damage(game["players"][1 - pi], total)
-        game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)}")
+        hp_dmg, blocked, absorber = _apply_damage(game["players"][1 - pi], total)
+        game["log"].append(f"{player['name']} deals {_damage_log(amount, strength, blocked, absorber)}")
 
     return effect
 
@@ -99,18 +109,18 @@ def damage_target(amount):
         strength = player.get("strength", 0)
         total = amount + strength
         if not target or target == "opponent":
-            _apply_damage(opp, total)
-            game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)}")
+            hp_dmg, blocked, abs_name = _apply_damage(opp, total)
+            game["log"].append(f"{player['name']} deals {_damage_log(amount, strength, blocked, abs_name)}")
         else:
             for unit in list(opp["field"]):
                 if unit["id"] == target:
-                    absorber = next(
+                    wall = next(
                         (u for u in opp["field"] if u.get("absorbs_damage") and u["id"] != unit["id"]),
                         None,
                     )
-                    if absorber:
-                        _damage_unit(game, opp, absorber, total)
-                        game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)} to {absorber['name']}")
+                    if wall:
+                        _damage_unit(game, opp, wall, total)
+                        game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)} to {wall['name']}")
                     else:
                         _damage_unit(game, opp, unit, total)
                         game["log"].append(f"{player['name']} deals {_damage_log(amount, strength)} to {unit['name']}")
@@ -125,18 +135,23 @@ def body_slam():
         opp = game["players"][1 - pi]
         amount = player.get("block", 0)
         if not target or target == "opponent":
-            _apply_damage(opp, amount)
-            game["log"].append(f"{player['name']} deals {amount} damage (Body Slam)")
+            hp_dmg, blocked, abs_name = _apply_damage(opp, amount)
+            log_dmg = f"{amount} damage"
+            if abs_name:
+                log_dmg += f" [absorbed by {abs_name}]"
+            elif blocked > 0:
+                log_dmg += f" [{blocked} blocked]"
+            game["log"].append(f"{player['name']} deals {log_dmg} (Body Slam)")
         else:
             for unit in list(opp["field"]):
                 if unit["id"] == target:
-                    absorber = next(
+                    wall = next(
                         (u for u in opp["field"] if u.get("absorbs_damage") and u["id"] != unit["id"]),
                         None,
                     )
-                    if absorber:
-                        _damage_unit(game, opp, absorber, amount)
-                        game["log"].append(f"{player['name']} deals {amount} damage to {absorber['name']} (Body Slam)")
+                    if wall:
+                        _damage_unit(game, opp, wall, amount)
+                        game["log"].append(f"{player['name']} deals {amount} damage to {wall['name']} (Body Slam)")
                     else:
                         _damage_unit(game, opp, unit, amount)
                         game["log"].append(f"{player['name']} deals {amount} damage to {unit['name']} (Body Slam)")
@@ -151,8 +166,8 @@ def twist_blade():
         amount = 10 if opp.get("damaged_this_turn") else 3
         strength = player.get("strength", 0)
         total = amount + strength
-        _apply_damage(opp, total)
-        game["log"].append(f"{player['name']}'s Twist Blade deals {_damage_log(amount, strength)}")
+        hp_dmg, blocked, abs_name = _apply_damage(opp, total)
+        game["log"].append(f"{player['name']}'s Twist Blade deals {_damage_log(amount, strength, blocked, abs_name)}")
     return effect
 
 
@@ -209,6 +224,14 @@ _PASSIVE_REGISTRY = {
     "ritual": _passive_ritual,
     "rest": _passive_rest,
 }
+
+PASSIVE_INFO = {
+    "ritual": {"name": "ritual", "description": "Each turn: +1 Strength per stack."},
+    "rest": {"name": "rest", "description": "Next turn: +2 Energy per stack. Consumed after triggering."},
+}
+
+def get_passive_info():
+    return PASSIVE_INFO
 
 
 def apply_passives(game, pi):
