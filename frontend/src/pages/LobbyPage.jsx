@@ -7,6 +7,7 @@ export default function LobbyPage() {
   const { lobbyCode, error, lobbyPlayers, playerName, setPlayerName, resetToLobby } = useGame();
   const { createGame, joinGame, reconnectGame, startGame } = useSocket();
 
+  const [copied, setCopied] = useState(false);
   const [joinCode, setJoinCode] = useState('');
   const [nameInput, setNameInput] = useState('');
   const [mode, setMode] = useState(null); // null, 'create', 'join', 'reconnect'
@@ -42,7 +43,14 @@ export default function LobbyPage() {
       <div className="lobby-page">
         <div className="lobby-waiting">
           <h2>Lobby Created</h2>
-          <p className="lobby-code">Code: <strong>{lobbyCode}</strong></p>
+          <p className="lobby-code">
+            Code: <strong>{lobbyCode}</strong>
+            <button className="btn-copy" onClick={() => {
+              navigator.clipboard.writeText(lobbyCode);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 1500);
+            }}>{copied ? 'Copied!' : 'Copy'}</button>
+          </p>
           <p>Share this code with your opponent.</p>
           <p className="waiting-text">Waiting for opponent to join...</p>
           <button className="btn-back" onClick={resetToLobby}>Back</button>
