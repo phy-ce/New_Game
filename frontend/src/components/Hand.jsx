@@ -2,6 +2,19 @@ import { useRef, useEffect, useState } from 'react';
 import Card from './Card';
 import '../styles/Hand.css';
 
+function getFanStyle(index, total) {
+  if (total <= 1) return {};
+  const mid = (total - 1) / 2;
+  const offset = index - mid;
+  const maxAngle = Math.min(total * 2, 30);
+  const angle = (offset / mid) * maxAngle;
+  const lift = Math.pow(offset, 2) * 1.5;
+  return {
+    transform: `rotate(${angle}deg) translateY(${lift}px)`,
+    zIndex: index,
+  };
+}
+
 export default function Hand({ cards, onPlayCard, isPlayable, faceDown, count }) {
   const prevIdsRef = useRef(new Set());
   const [newIds, setNewIds] = useState(new Set());
@@ -29,16 +42,19 @@ export default function Hand({ cards, onPlayCard, isPlayable, faceDown, count })
     );
   }
 
+  const total = cards.length;
+
   return (
     <div className="hand">
-      {cards.map((card) => (
-        <Card
-          key={card.id}
-          card={card}
-          onClick={onPlayCard}
-          isPlayable={isPlayable}
-          isNew={newIds.has(card.id)}
-        />
+      {cards.map((card, i) => (
+        <div key={card.id} className="hand-card-wrapper" style={getFanStyle(i, total)}>
+          <Card
+            card={card}
+            onClick={onPlayCard}
+            isPlayable={isPlayable}
+            isNew={newIds.has(card.id)}
+          />
+        </div>
       ))}
     </div>
   );

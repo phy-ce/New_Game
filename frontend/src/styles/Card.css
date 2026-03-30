@@ -32,7 +32,6 @@
 }
 
 .card.playable:hover {
-  transform: translateY(-8px);
   box-shadow: 0 4px 16px rgba(100, 200, 100, 0.5);
 }
 
