@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cards>
+  <card cid="C00001">
+    <name kr="타격" en="Strike"/>
+    <effect kr="4 데미지" en="Deal 4 damage"/>
+  </card>
+  <card cid="C00002">
+    <name kr="수비" en="Block"/>
+    <effect kr="방어도 +3" en="+3 Block"/>
+  </card>
+  <card cid="C00003">
+    <name kr="동화" en="Copper"/>
+    <effect kr="돈 +1" en="+1 Gold"/>
+  </card>
+  <card cid="C00004">
+    <name kr="은화" en="Silver"/>
+    <effect kr="돈 +2" en="+2 Gold"/>
+  </card>
+  <card cid="C00005">
+    <name kr="금화" en="Gold"/>
+    <effect kr="돈 +3" en="+3 Gold"/>
+  </card>
+  <card cid="C00006">
+    <name kr="후벼파기" en="Twist Blade"/>
+    <effect kr="데미지 3. 이번 턴에 대상의 HP가 감소한적이 있다면 추가 7 데미지" en="Deal 3 damage. If target's HP was reduced this turn, deal 7 extra damage"/>
+  </card>
+  <card cid="C00007">
+    <name kr="강한 타격" en="Heavy Strike"/>
+    <effect kr="데미지 12" en="Deal 12 damage"/>
+  </card>
+  <card cid="C00008">
+    <name kr="몸통 박치기" en="Body Slam"/>
+    <effect kr="현재 방어도만큼의 데미지" en="Deal damage equal to your current Block"/>
+  </card>
+  <card cid="C00009">
+    <name kr="연구" en="Study"/>
+    <effect kr="카드 +3" en="+3 Cards"/>
+  </card>
+  <card cid="C00010">
+    <name kr="알바" en="Work"/>
+    <effect kr="카드 +1 / 돈 +2" en="+1 Card, +2 Gold"/>
+  </card>
+  <card cid="C00011">
+    <name kr="버티기" en="Fortify"/>
+    <effect kr="방어도 +8 / 카드 +2" en="+8 Block, +2 Cards"/>
+  </card>
+  <card cid="C00012">
+    <name kr="충전" en="Recharge"/>
+    <effect kr="에너지 +1 / 카드 +1" en="+1 Energy, +1 Card"/>
+  </card>
+  <card cid="C00013">
+    <name kr="동면" en="Sleep"/>
+    <effect kr="다음 턴에 에너지 +2" en="Next turn: +2 Energy"/>
+  </card>
+  <card cid="C00014">
+    <name kr="재잘대기" en="Blabber"/>
+    <effect kr="데미지 1 / 카드 +1" en="Deal 1 damage, +1 Card"/>
+  </card>
+  <card cid="C00015">
+    <name kr="박쥐" en="Bat"/>
+    <effect kr="박쥐 2마리 소환 (공격력 2 체력 3)" en="Summon 2 Bats (2/3)"/>
+  </card>
+  <card cid="C00016">
+    <name kr="두번치기" en="Doublestrike"/>
+    <effect kr="데미지 2를 두 번 실행" en="Deal 2 damage twice"/>
+  </card>
+  <card cid="C00017">
+    <name kr="훈련" en="Train"/>
+    <effect kr="공격력 1 증가" en="+1 Strength"/>
+  </card>
+  <card cid="C00018">
+    <name kr="강화" en="Ritual"/>
+    <effect kr="의식 1 증가 (소멸)" en="+1 Ritual (Exhaust)"/>
+  </card>
+  <card cid="C00019">
+    <name kr="벽" en="Wall"/>
+    <effect kr="챔피언 0/8. 벽을 제외한 대상에 가해지는 데미지를 벽이 대신 맞아줌" en="Champion 0/8. Absorbs damage dealt to other targets"/>
+  </card>
+  <card cid="C00020">
+    <name kr="농장" en="Farm"/>
+    <effect kr="챔피언 0/5. 매 턴 돈 +1 / HP +1" en="Champion 0/5. Each turn: +1 Gold, +1 HP"/>
+  </card>
+  <card cid="C00021">
+    <name kr="망루" en="Watchtower"/>
+    <effect kr="챔피언 0/15. 매 턴 상대에게 2 데미지" en="Champion 0/15. Each turn: deal 2 damage to opponent"/>
+  </card>
+</cards>

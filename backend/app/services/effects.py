@@ -118,6 +118,32 @@ def damage_target(amount):
     return effect
 
 
+def body_slam():
+    def effect(game, pi):
+        player = game["players"][pi]
+        target = game.get("_play_target")
+        opp = game["players"][1 - pi]
+        amount = player.get("block", 0)
+        if not target or target == "opponent":
+            _apply_damage(opp, amount)
+            game["log"].append(f"{player['name']} deals {amount} damage (Body Slam)")
+        else:
+            for unit in list(opp["field"]):
+                if unit["id"] == target:
+                    absorber = next(
+                        (u for u in opp["field"] if u.get("absorbs_damage") and u["id"] != unit["id"]),
+                        None,
+                    )
+                    if absorber:
+                        _damage_unit(game, opp, absorber, amount)
+                        game["log"].append(f"{player['name']} deals {amount} damage to {absorber['name']} (Body Slam)")
+                    else:
+                        _damage_unit(game, opp, unit, amount)
+                        game["log"].append(f"{player['name']} deals {amount} damage to {unit['name']} (Body Slam)")
+                    break
+    return effect
+
+
 def twist_blade():
     def effect(game, pi):
         player = game["players"][pi]

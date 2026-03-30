@@ -13,6 +13,7 @@ export function SocketProvider({ children }) {
   useEffect(() => {
     const socket = io('/', { transports: ['websocket', 'polling'] });
     socketRef.current = socket;
+    window.socket = socket;
 
     socket.on('game_created', (data) => {
       setLobbyCode(data.lobby_code);
