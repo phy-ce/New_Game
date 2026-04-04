@@ -5,7 +5,7 @@ UNIT_TEMPLATES = {
     "Bat": {
         "name": "Bat",
         "hp": 3,
-        "attack": 2,
+        "attack": 3,
         "description": "A swift bat.",
         "image": "bat.png",
     },
@@ -30,9 +30,11 @@ def get_client_templates():
 
 
 def create_unit(unit_type, owner_index):
+    template = UNIT_TEMPLATES[unit_type]
     return {
         "id": str(uuid.uuid4())[:8],
         "name": unit_type,
-        "current_hp": UNIT_TEMPLATES[unit_type]["hp"],
+        "current_hp": template["hp"],
+        "attack": template.get("attack", 0),
         "owner": owner_index,
     }

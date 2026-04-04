@@ -1,6 +1,6 @@
 import random
 import uuid
-from app.services.effects import gain_gold, gain_energy, draw, do_damage, summon, damage_target, gain_block, gain_strength, champion_place, twist_blade, gain_passive, heal_owner, body_slam, damage_all_enemies, destroy_target
+from app.services.effects import gain_gold, gain_energy, draw, do_damage, summon, damage_target, gain_block, gain_strength, champion_place, twist_blade, gain_passive, heal_owner, body_slam, gain_burn, arson, champion_burn, damage_all_enemies, destroy_target
 
 # Card ID constants
 STRIKE = "C00001"
@@ -20,21 +20,28 @@ BLABBER = "C00014"
 BAT = "C00015"
 DOUBLESTRIKE = "C00016"
 TRAIN = "C00017"
-RITUAL = "C00018"
-WALL = "C00019"
-FARM = "C00020"
-WATCHTOWER = "C00021"
+WALL = "C00018"
+FARM = "C00019"
+WATCHTOWER = "C00020"
 
-# Rare card ID constants
-DRAGON_CLAW    = "C00022"
-PHOENIX_FEATHER = "C00023"
-SHADOW_STEP    = "C00024"
-THUNDER_STRIKE = "C00025"
-IRON_WILL      = "C00026"
-VOID_TEAR      = "C00028"
-GLACIAL_SHARD  = "C00029"
-SOUL_DRAIN     = "C00030"
-ARCANE_SURGE   = "C00031"
+# Rare card ID constants (new)
+RITUAL         = "C10001"
+PLATEARMOUR    = "C10002"
+GROWTH         = "C10003"
+THORN          = "C10004"
+ARSON          = "C10005"
+DRAGON         = "C10006"
+
+# Rare card ID constants (legacy)
+DRAGON_CLAW    = "C11001"
+PHOENIX_FEATHER = "C11002"
+SHADOW_STEP    = "C11003"
+THUNDER_STRIKE = "C11004"
+IRON_WILL      = "C11005"
+VOID_TEAR      = "C11006"
+GLACIAL_SHARD  = "C11007"
+SOUL_DRAIN     = "C11008"
+ARCANE_SURGE   = "C11009"
 
 CARD_TEMPLATES = {
     "C00001": {
@@ -124,7 +131,7 @@ CARD_TEMPLATES = {
     "C00009": {
         "name": "Study",
         "cost": 5,
-        "energy_cost": 1,
+        "energy_cost": 2,
         "type": "action",
         "rarity": "common",
         "effect": "+3 Cards",
@@ -156,7 +163,7 @@ CARD_TEMPLATES = {
         "cost": 4,
         "energy_cost": 0,
         "type": "action",
-        "rarity": "common",
+        "rarity": "uncommon",
         "effect": "+1 Energy, +1 Card",
         "image": "village.png",
         "effects": [draw(1), gain_energy(1)],
@@ -166,7 +173,7 @@ CARD_TEMPLATES = {
         "cost": 3,
         "energy_cost": 1,
         "type": "action",
-        "rarity": "common",
+        "rarity": "uncommon",
         "effect": "Next turn: +2 Energy",
         "image": "village.png",
         "effects": [gain_passive("rest", 1)],
@@ -176,7 +183,7 @@ CARD_TEMPLATES = {
         "cost": 3,
         "energy_cost": 0,
         "type": "action",
-        "rarity": "common",
+        "rarity": "uncommon",
         "effect": "Deal 1 damage, +1 Card",
         "image": "strike.png",
         "needs_target": True,
@@ -187,8 +194,8 @@ CARD_TEMPLATES = {
         "cost": 4,
         "energy_cost": 2,
         "type": "action",
-        "rarity": "common",
-        "effect": "Summon 2 Bats (2/3)",
+        "rarity": "uncommon",
+        "effect": "Summon 2 Bats (3/3)",
         "image": "bat.png",
         "effects": [summon("Bat"), summon("Bat")],
     },
@@ -205,61 +212,116 @@ CARD_TEMPLATES = {
     },
     "C00017": {
         "name": "Train",
-        "cost": 5,
+        "cost": 4,
         "energy_cost": 0,
         "type": "action",
-        "rarity": "common",
+        "rarity": "uncommon",
         "effect": "+1 Strength",
         "image": "village.png",
         "effects": [gain_strength(1)],
     },
     "C00018": {
-        "name": "Ritual",
-        "cost": 7,
-        "energy_cost": 3,
-        "type": "action",
-        "rarity": "common",
-        "exhaust": True,
-        "effect": "+1 Ritual (Exhaust)",
-        "image": "village.png",
-        "effects": [gain_passive("ritual", 1)],
-    },
-    "C00019": {
         "name": "Wall",
         "cost": 4,
         "energy_cost": 1,
         "type": "action",
-        "rarity": "common",
+        "rarity": "uncommon",
         "champion": True,
         "effect": "Champion 0/8. Absorbs damage dealt to other targets",
         "image": "block.png",
         "effects": [champion_place(hp=8, attack=0, absorbs_damage=True)],
     },
-    "C00020": {
+    "C00019": {
         "name": "Farm",
         "cost": 3,
         "energy_cost": 2,
         "type": "action",
-        "rarity": "common",
+        "rarity": "uncommon",
         "champion": True,
-        "effect": "Champion 0/5. Each turn: +1 Gold, +1 HP",
+        "effect": "Champion 0/5. Each turn: +3 Gold, +3 HP",
         "image": "village.png",
-        "effects": [champion_place(hp=5, attack=0, effect=[heal_owner(1), gain_gold(1)])],
+        "effects": [champion_place(hp=5, attack=0, effect=[heal_owner(3), gain_gold(3)])],
     },
-    "C00021": {
+    "C00020": {
         "name": "Watchtower",
         "cost": 5,
         "energy_cost": 2,
         "type": "action",
-        "rarity": "common",
+        "rarity": "uncommon",
         "champion": True,
         "effect": "Champion 0/15. Each turn: deal 2 damage to opponent",
         "image": "village.png",
         "effects": [champion_place(hp=15, attack=2)],
     },
 
-    # --- Rare cards ---
-    "C00022": {
+    # --- Rare cards (new from spreadsheet) ---
+    "C10001": {
+        "name": "Ritual",
+        "cost": 9,
+        "energy_cost": 3,
+        "type": "action",
+        "rarity": "rare",
+        "exhaust": True,
+        "effect": "+1 Ritual (Exhaust)",
+        "image": "village.png",
+        "effects": [gain_passive("ritual", 1)],
+    },
+    "C10002": {
+        "name": "Platearmour",
+        "cost": 6,
+        "energy_cost": 2,
+        "type": "action",
+        "rarity": "rare",
+        "exhaust": True,
+        "effect": "+4 Platearmour (Exhaust)",
+        "image": "block.png",
+        "effects": [gain_passive("platearmour", 4)],
+    },
+    "C10003": {
+        "name": "Growth",
+        "cost": 6,
+        "energy_cost": 2,
+        "type": "action",
+        "rarity": "rare",
+        "exhaust": True,
+        "effect": "+1 Growth (Exhaust)",
+        "image": "village.png",
+        "effects": [gain_passive("growth", 1)],
+    },
+    "C10004": {
+        "name": "Thorn",
+        "cost": 4,
+        "energy_cost": 1,
+        "type": "action",
+        "rarity": "rare",
+        "effect": "+1 Thorn",
+        "image": "block.png",
+        "effects": [gain_passive("thorn", 1)],
+    },
+    "C10005": {
+        "name": "Arson",
+        "cost": 6,
+        "energy_cost": 2,
+        "type": "action",
+        "rarity": "rare",
+        "effect": "Trash 1 random card from opponent's deck. Apply 2 Burn.",
+        "image": "strike.png",
+        "effects": [arson()],
+    },
+    "C10006": {
+        "name": "Dragon",
+        "cost": 6,
+        "energy_cost": 2,
+        "type": "action",
+        "rarity": "rare",
+        "champion": True,
+        "effect": "Champion 4/35. Each turn: apply 4 Burn to opponent.",
+        "image": "strike.png",
+        "effects": [champion_place(hp=35, attack=4, effect=[champion_burn(4)])],
+    },
+
+    # --- Rare cards (legacy) ---
+    "C11001": {
         "name": "Dragon Claw",
         "cost": 5,
         "energy_cost": 1,
@@ -270,7 +332,7 @@ CARD_TEMPLATES = {
         "needs_target": True,
         "effects": [damage_target(8), gain_strength(2)],
     },
-    "C00023": {
+    "C11002": {
         "name": "Phoenix Feather",
         "cost": 6,
         "energy_cost": 0,
@@ -280,7 +342,7 @@ CARD_TEMPLATES = {
         "image": "village.png",
         "effects": [heal_owner(25)],
     },
-    "C00024": {
+    "C11003": {
         "name": "Shadow Step",
         "cost": 4,
         "energy_cost": 1,
@@ -290,7 +352,7 @@ CARD_TEMPLATES = {
         "image": "block.png",
         "effects": [gain_block(10), draw(3)],
     },
-    "C00025": {
+    "C11004": {
         "name": "Thunder Strike",
         "cost": 7,
         "energy_cost": 2,
@@ -300,7 +362,7 @@ CARD_TEMPLATES = {
         "image": "strike.png",
         "effects": [damage_all_enemies(6)],
     },
-    "C00026": {
+    "C11005": {
         "name": "Iron Will",
         "cost": 5,
         "energy_cost": 0,
@@ -310,7 +372,7 @@ CARD_TEMPLATES = {
         "image": "block.png",
         "effects": [gain_block(15), gain_energy(1)],
     },
-    "C00028": {
+    "C11006": {
         "name": "Void Tear",
         "cost": 4,
         "energy_cost": 2,
@@ -321,7 +383,7 @@ CARD_TEMPLATES = {
         "needs_target": True,
         "effects": [destroy_target()],
     },
-    "C00029": {
+    "C11007": {
         "name": "Glacial Shard",
         "cost": 7,
         "energy_cost": 1,
@@ -332,7 +394,7 @@ CARD_TEMPLATES = {
         "needs_target": True,
         "effects": [damage_target(10), gain_passive("rest", 1)],
     },
-    "C00030": {
+    "C11008": {
         "name": "Soul Drain",
         "cost": 5,
         "energy_cost": 2,
@@ -343,7 +405,7 @@ CARD_TEMPLATES = {
         "needs_target": True,
         "effects": [damage_target(12), heal_owner(8)],
     },
-    "C00031": {
+    "C11009": {
         "name": "Arcane Surge",
         "cost": 6,
         "energy_cost": 0,
@@ -375,7 +437,6 @@ MARKET_POOL = {
     BAT: 10,
     DOUBLESTRIKE: 10,
     TRAIN: 10,
-    RITUAL: 10,
     WALL: 10,
     FARM: 10,
     WATCHTOWER: 10,
@@ -414,13 +475,14 @@ def create_starter_deck():
 
 
 RARE_POOL = [
+    RITUAL, PLATEARMOUR, GROWTH, THORN, ARSON, DRAGON,
     DRAGON_CLAW, PHOENIX_FEATHER, SHADOW_STEP, THUNDER_STRIKE, IRON_WILL,
     VOID_TEAR, GLACIAL_SHARD, SOUL_DRAIN, ARCANE_SURGE,
 ]
 
 
 def create_market():
-    """Create a market with fixed cards (Silver/Gold) + 8 randomly selected common cards."""
+    """Create a market with fixed cards (Silver/Gold) + 8 randomly selected cards."""
     market = {cid: {"count": count} for cid, count in MARKET_FIXED.items()}
     selected = random.sample(list(MARKET_POOL.keys()), 8)
     for cid in selected:
