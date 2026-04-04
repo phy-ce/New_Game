@@ -33,15 +33,20 @@ def draw(amount):
 def _apply_damage(player, amount):
     """Apply damage to a player, consuming block first. Redirects to absorbing champion if present.
     Returns (actual_hp_damage, blocked_amount, absorber_name or None)."""
+    absorber_name = None
     for unit in list(player["field"]):
         if unit.get("absorbs_damage"):
+            absorber_name = unit["name"]
+            overflow = amount - unit["current_hp"]
             unit["current_hp"] -= amount
-            name = unit["name"]
             if unit["current_hp"] <= 0:
                 player["field"].remove(unit)
                 if unit.get("is_champion"):
                     player["discard"].append(unit["source_card"])
-            return 0, 0, name
+            if overflow <= 0:
+                return 0, 0, absorber_name
+            amount = overflow
+            break
     blocked = 0
     if player.get("block", 0) > 0:
         blocked = min(player["block"], amount)
@@ -50,7 +55,7 @@ def _apply_damage(player, amount):
     if amount > 0:
         player["hp"] -= amount
         player["damaged_this_turn"] = True
-    return amount, blocked, None
+    return amount, blocked, absorber_name
 
 
 def _damage_log(base, strength, blocked=0, absorber=None):
