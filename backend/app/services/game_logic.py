@@ -85,6 +85,7 @@ def start_game(game):
     game["market"] = create_market()
     game["market"]["relics"] = create_relic_market()
     game["market"]["rare"] = create_rare_market()
+    game["trash"] = []
     game["pending_choice"] = None
     game["log"] = ["Game started!"]
 

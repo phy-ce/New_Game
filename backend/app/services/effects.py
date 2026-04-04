@@ -58,6 +58,26 @@ def _apply_damage(player, amount):
     return amount, blocked, absorber_name
 
 
+def _get_thorn_stacks(player):
+    """Return thorn stacks for a player, or 0."""
+    for p in player.get("passives", []):
+        if p["name"] == "thorn":
+            return p["stacks"]
+    return 0
+
+
+def _apply_thorn(game, attacker_pi, defender, hp_dmg):
+    """If defender has thorn and took HP damage, deal thorn damage back to attacker."""
+    if hp_dmg <= 0:
+        return
+    thorn = _get_thorn_stacks(defender)
+    if thorn > 0:
+        attacker = game["players"][attacker_pi]
+        attacker["hp"] -= thorn
+        attacker["damaged_this_turn"] = True
+        game["log"].append(f"{defender['name']}'s Thorn deals {thorn} damage to {attacker['name']}")
+
+
 def _damage_log(base, strength, blocked=0, absorber=None):
     total = base + strength
     parts = f"{total} damage"
@@ -73,10 +93,12 @@ def _damage_log(base, strength, blocked=0, absorber=None):
 def do_damage(amount):
     def effect(game, pi):
         player = game["players"][pi]
+        opp = game["players"][1 - pi]
         strength = player.get("strength", 0)
         total = amount + strength
-        hp_dmg, blocked, absorber = _apply_damage(game["players"][1 - pi], total)
+        hp_dmg, blocked, absorber = _apply_damage(opp, total)
         game["log"].append(f"{player['name']} deals {_damage_log(amount, strength, blocked, absorber)}")
+        _apply_thorn(game, pi, opp, hp_dmg)
 
     return effect
 
@@ -116,6 +138,7 @@ def damage_target(amount):
         if not target or target == "opponent":
             hp_dmg, blocked, abs_name = _apply_damage(opp, total)
             game["log"].append(f"{player['name']} deals {_damage_log(amount, strength, blocked, abs_name)}")
+            _apply_thorn(game, pi, opp, hp_dmg)
         else:
             for unit in list(opp["field"]):
                 if unit["id"] == target:
@@ -147,6 +170,7 @@ def body_slam():
             elif blocked > 0:
                 log_dmg += f" [{blocked} blocked]"
             game["log"].append(f"{player['name']} deals {log_dmg} (Body Slam)")
+            _apply_thorn(game, pi, opp, hp_dmg)
         else:
             for unit in list(opp["field"]):
                 if unit["id"] == target:
@@ -179,17 +203,24 @@ def twist_blade():
 def champion_place(hp, attack, **flags):
     def effect(game, pi):
         card = game["_current_card"]
+        player = game["players"][pi]
+        # Apply growth bonus
+        growth_stacks = 0
+        for p in player.get("passives", []):
+            if p["name"] == "growth":
+                growth_stacks = p["stacks"]
+                break
         unit = {
             "id": card["id"],
             "name": card["name"],
-            "current_hp": hp,
-            "attack": attack,
+            "current_hp": hp + growth_stacks,
+            "attack": attack + growth_stacks,
             "owner": pi,
             "is_champion": True,
             "source_card": card,
         }
         unit.update(flags)
-        game["players"][pi]["field"].append(unit)
+        player["field"].append(unit)
     return effect
 
 
@@ -225,14 +256,38 @@ def _passive_rest(game, pi, stacks):
     player["passives"] = [p for p in player["passives"] if p["name"] != "rest"]
 
 
+def _passive_platearmour(game, pi, stacks):
+    game["players"][pi]["block"] += stacks
+    game["log"].append(f"{game['players'][pi]['name']}'s Platearmour triggers: +{stacks} Block")
+
+
+def _passive_thorn(game, pi, stacks):
+    """Thorn is checked reactively on damage, not during apply_passives."""
+    pass
+
+
+def _passive_burn(game, pi, stacks):
+    player = game["players"][pi]
+    player["hp"] -= stacks
+    if stacks > 0:
+        player["damaged_this_turn"] = True
+    game["log"].append(f"{player['name']} takes {stacks} burn damage")
+
+
 _PASSIVE_REGISTRY = {
     "ritual": _passive_ritual,
     "rest": _passive_rest,
+    "platearmour": _passive_platearmour,
+    "burn": _passive_burn,
 }
 
 PASSIVE_INFO = {
     "ritual": {"name": "ritual", "description": "Each turn: +1 Strength per stack."},
     "rest": {"name": "rest", "description": "Next turn: +2 Energy per stack. Consumed after triggering."},
+    "platearmour": {"name": "platearmour", "description": "Each turn: +1 Block per stack."},
+    "growth": {"name": "growth", "description": "Summoned units get +1 HP and +1 Attack per stack."},
+    "thorn": {"name": "thorn", "description": "When hit, deal 1 damage back per stack."},
+    "burn": {"name": "burn", "description": "Each turn: take 1 damage per stack."},
 }
 
 def get_passive_info():
@@ -246,10 +301,72 @@ def apply_passives(game, pi):
             handler(game, pi, passive["stacks"])
 
 
+def gain_burn(stacks):
+    """Apply burn stacks to the opponent."""
+    def effect(game, pi):
+        opp = game["players"][1 - pi]
+        for passive in opp["passives"]:
+            if passive["name"] == "burn":
+                passive["stacks"] += stacks
+                return
+        opp["passives"].append({"name": "burn", "stacks": stacks})
+    return effect
+
+
+def arson():
+    """Trash a random card from opponent's deck and apply 2 burn."""
+    def effect(game, pi):
+        import random as _rand
+        player = game["players"][pi]
+        opp = game["players"][1 - pi]
+        # Trash a random card from opponent's deck
+        if opp["deck"]:
+            card = _rand.choice(opp["deck"])
+            opp["deck"].remove(card)
+            game.setdefault("trash", []).append(card)
+            game["log"].append(f"{player['name']}'s Arson trashes {card['name']} from {opp['name']}'s deck")
+        else:
+            game["log"].append(f"{player['name']}'s Arson: {opp['name']}'s deck is empty")
+        # Apply 2 burn
+        for passive in opp["passives"]:
+            if passive["name"] == "burn":
+                passive["stacks"] += 2
+                game["log"].append(f"{opp['name']} gains 2 Burn")
+                return
+        opp["passives"].append({"name": "burn", "stacks": 2})
+        game["log"].append(f"{opp['name']} gains 2 Burn")
+    return effect
+
+
+def champion_burn(stacks):
+    """Champion effect: apply burn to opponent each turn."""
+    def effect(game, pi):
+        opp = game["players"][1 - pi]
+        for passive in opp["passives"]:
+            if passive["name"] == "burn":
+                passive["stacks"] += stacks
+                game["log"].append(f"{opp['name']} gains {stacks} Burn")
+                return
+        opp["passives"].append({"name": "burn", "stacks": stacks})
+        game["log"].append(f"{opp['name']} gains {stacks} Burn")
+    return effect
+
+
 def summon(unit_type):
     def effect(game, pi):
         from app.models.units import create_unit
-        game["players"][pi]["field"].append(create_unit(unit_type, pi))
+        player = game["players"][pi]
+        unit = create_unit(unit_type, pi)
+        # Apply growth bonus
+        growth_stacks = 0
+        for p in player.get("passives", []):
+            if p["name"] == "growth":
+                growth_stacks = p["stacks"]
+                break
+        if growth_stacks > 0:
+            unit["current_hp"] += growth_stacks
+            unit["attack"] = unit.get("attack", 0) + growth_stacks
+        player["field"].append(unit)
 
     return effect
 
