@@ -2,9 +2,31 @@ import random
 import uuid
 from app.services.effects import gain_gold, gain_energy, draw, do_damage, summon, damage_target, gain_block, gain_strength, champion_place, twist_blade, gain_passive, heal_owner, body_slam
 
+# Card ID constants
+STRIKE = "C00001"
+BLOCK = "C00002"
+COPPER = "C00003"
+SILVER = "C00004"
+GOLD = "C00005"
+TWIST_BLADE = "C00006"
+HEAVY_STRIKE = "C00007"
+BODY_SLAM = "C00008"
+STUDY = "C00009"
+WORK = "C00010"
+FORTIFY = "C00011"
+RECHARGE = "C00012"
+SLEEP = "C00013"
+BLABBER = "C00014"
+BAT = "C00015"
+DOUBLESTRIKE = "C00016"
+TRAIN = "C00017"
+RITUAL = "C00018"
+WALL = "C00019"
+FARM = "C00020"
+WATCHTOWER = "C00021"
+
 CARD_TEMPLATES = {
     "C00001": {
-        "cid": "C00001",
         "name": "Strike",
         "cost": 0,
         "energy_cost": 1,
@@ -15,7 +37,6 @@ CARD_TEMPLATES = {
         "effects": [damage_target(4)],
     },
     "C00002": {
-        "cid": "C00002",
         "name": "Block",
         "cost": 0,
         "energy_cost": 1,
@@ -25,7 +46,6 @@ CARD_TEMPLATES = {
         "effects": [gain_block(3)],
     },
     "C00003": {
-        "cid": "C00003",
         "name": "Copper",
         "cost": 0,
         "energy_cost": 0,
@@ -35,7 +55,6 @@ CARD_TEMPLATES = {
         "effects": [gain_gold(1)],
     },
     "C00004": {
-        "cid": "C00004",
         "name": "Silver",
         "cost": 3,
         "energy_cost": 0,
@@ -45,7 +64,6 @@ CARD_TEMPLATES = {
         "effects": [gain_gold(2)],
     },
     "C00005": {
-        "cid": "C00005",
         "name": "Gold",
         "cost": 6,
         "energy_cost": 0,
@@ -55,7 +73,6 @@ CARD_TEMPLATES = {
         "effects": [gain_gold(3)],
     },
     "C00006": {
-        "cid": "C00006",
         "name": "Twist Blade",
         "cost": 2,
         "energy_cost": 1,
@@ -66,7 +83,6 @@ CARD_TEMPLATES = {
         "effects": [twist_blade()],
     },
     "C00007": {
-        "cid": "C00007",
         "name": "Heavy Strike",
         "cost": 5,
         "energy_cost": 2,
@@ -77,7 +93,6 @@ CARD_TEMPLATES = {
         "effects": [damage_target(12)],
     },
     "C00008": {
-        "cid": "C00008",
         "name": "Body Slam",
         "cost": 3,
         "energy_cost": 1,
@@ -88,7 +103,6 @@ CARD_TEMPLATES = {
         "effects": [body_slam()],
     },
     "C00009": {
-        "cid": "C00009",
         "name": "Study",
         "cost": 5,
         "energy_cost": 1,
@@ -98,7 +112,6 @@ CARD_TEMPLATES = {
         "effects": [draw(3)],
     },
     "C00010": {
-        "cid": "C00010",
         "name": "Work",
         "cost": 4,
         "energy_cost": 1,
@@ -108,7 +121,6 @@ CARD_TEMPLATES = {
         "effects": [draw(1), gain_gold(2)],
     },
     "C00011": {
-        "cid": "C00011",
         "name": "Fortify",
         "cost": 5,
         "energy_cost": 1,
@@ -118,7 +130,6 @@ CARD_TEMPLATES = {
         "effects": [gain_block(8), draw(2)],
     },
     "C00012": {
-        "cid": "C00012",
         "name": "Recharge",
         "cost": 4,
         "energy_cost": 0,
@@ -128,7 +139,6 @@ CARD_TEMPLATES = {
         "effects": [draw(1), gain_energy(1)],
     },
     "C00013": {
-        "cid": "C00013",
         "name": "Sleep",
         "cost": 3,
         "energy_cost": 1,
@@ -138,7 +148,6 @@ CARD_TEMPLATES = {
         "effects": [gain_passive("rest", 1)],
     },
     "C00014": {
-        "cid": "C00014",
         "name": "Blabber",
         "cost": 3,
         "energy_cost": 0,
@@ -149,7 +158,6 @@ CARD_TEMPLATES = {
         "effects": [damage_target(1), draw(1)],
     },
     "C00015": {
-        "cid": "C00015",
         "name": "Bat",
         "cost": 4,
         "energy_cost": 2,
@@ -159,7 +167,6 @@ CARD_TEMPLATES = {
         "effects": [summon("Bat"), summon("Bat")],
     },
     "C00016": {
-        "cid": "C00016",
         "name": "Doublestrike",
         "cost": 5,
         "energy_cost": 1,
@@ -170,7 +177,6 @@ CARD_TEMPLATES = {
         "effects": [damage_target(2), damage_target(2)],
     },
     "C00017": {
-        "cid": "C00017",
         "name": "Train",
         "cost": 5,
         "energy_cost": 0,
@@ -180,7 +186,6 @@ CARD_TEMPLATES = {
         "effects": [gain_strength(1)],
     },
     "C00018": {
-        "cid": "C00018",
         "name": "Ritual",
         "cost": 7,
         "energy_cost": 3,
@@ -191,7 +196,6 @@ CARD_TEMPLATES = {
         "effects": [gain_passive("ritual", 1)],
     },
     "C00019": {
-        "cid": "C00019",
         "name": "Wall",
         "cost": 4,
         "energy_cost": 1,
@@ -202,7 +206,6 @@ CARD_TEMPLATES = {
         "effects": [champion_place(hp=8, attack=0, absorbs_damage=True)],
     },
     "C00020": {
-        "cid": "C00020",
         "name": "Farm",
         "cost": 3,
         "energy_cost": 2,
@@ -213,7 +216,6 @@ CARD_TEMPLATES = {
         "effects": [champion_place(hp=5, attack=0, effect=[heal_owner(1), gain_gold(1)])],
     },
     "C00021": {
-        "cid": "C00021",
         "name": "Watchtower",
         "cost": 5,
         "energy_cost": 2,
@@ -227,32 +229,32 @@ CARD_TEMPLATES = {
 
 # Fixed market: always available
 MARKET_FIXED = {
-    "C00004": 20,   # Silver
-    "C00005": 15,   # Gold
+    SILVER: 20,
+    GOLD: 15,
 }
 
 # General market pool: randomly selected each game
 MARKET_POOL = {
-    "C00006": 10,   # Twist Blade
-    "C00007": 10,   # Heavy Strike
-    "C00008": 10,   # Body Slam
-    "C00009": 10,   # Study
-    "C00010": 10,   # Work
-    "C00011": 10,   # Fortify
-    "C00012": 10,   # Recharge
-    "C00013": 10,   # Sleep
-    "C00014": 10,   # Blabber
-    "C00015": 10,   # Bat
-    "C00016": 10,   # Doublestrike
-    "C00017": 10,   # Train
-    "C00018": 10,   # Ritual
-    "C00019": 10,   # Wall
-    "C00020": 10,   # Farm
-    "C00021": 10,   # Watchtower
+    TWIST_BLADE: 10,
+    HEAVY_STRIKE: 10,
+    BODY_SLAM: 10,
+    STUDY: 10,
+    WORK: 10,
+    FORTIFY: 10,
+    RECHARGE: 10,
+    SLEEP: 10,
+    BLABBER: 10,
+    BAT: 10,
+    DOUBLESTRIKE: 10,
+    TRAIN: 10,
+    RITUAL: 10,
+    WALL: 10,
+    FARM: 10,
+    WATCHTOWER: 10,
 }
 
 
-_CLIENT_FIELDS = {"name", "cost", "energy_cost", "type", "effect", "image", "needs_target", "exhaust", "cid"}
+_CLIENT_FIELDS = {"name", "cost", "energy_cost", "type", "effect", "image", "needs_target", "exhaust"}
 
 
 def get_client_templates():
@@ -276,8 +278,8 @@ def create_starter_deck():
     """Create a starter deck: 6 Coppers + 2 Strikes + 2 Blocks."""
     deck = []
     for _ in range(6):
-        deck.append(create_card("C00003"))  # Copper
-    for cid in ["C00001", "C00001", "C00002", "C00002"]:  # Strike x2, Block x2
+        deck.append(create_card(COPPER))
+    for cid in [STRIKE, STRIKE, BLOCK, BLOCK]:
         deck.append(create_card(cid))
     random.shuffle(deck)
     return deck
