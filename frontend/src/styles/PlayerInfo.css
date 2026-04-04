@@ -180,3 +180,54 @@
   outline: none;
   animation: none;
 }
+
+.pi-relics-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.pi-relic-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #6020a0;
+  border: 2px solid #c080ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #fff;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.pi-relic-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1030;
+  border: 1px solid #c080ff;
+  border-radius: 6px;
+  padding: 6px 8px;
+  width: 160px;
+  z-index: 200;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+.pi-relic-tooltip-name {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #e0b0ff;
+  margin-bottom: 3px;
+}
+
+.pi-relic-tooltip-desc {
+  font-size: 0.65rem;
+  color: #aaa;
+  line-height: 1.3;
+}

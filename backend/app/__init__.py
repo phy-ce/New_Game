@@ -25,6 +25,11 @@ def create_app():
         from app.services.effects import get_passive_info
         return jsonify(get_passive_info())
 
+    @app.route('/api/relic-templates')
+    def relic_templates():
+        from app.models.relics import get_client_relic_templates
+        return jsonify(get_client_relic_templates())
+
     @app.route('/')
     def index():
         return send_from_directory(app.static_folder, 'index.html')

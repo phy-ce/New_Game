@@ -4,11 +4,13 @@ import FloatingDamage from './FloatingDamage';
 import '../styles/PlayerInfo.css';
 
 export default function PlayerInfo({ player, isMe, onTarget, isSelected }) {
-  const { passiveInfo } = useGame();
+  const { passiveInfo, relicTemplates } = useGame();
   const [showPassives, setShowPassives] = useState(false);
   const [expandedPassive, setExpandedPassive] = useState(null);
+  const [relicTooltip, setRelicTooltip] = useState(null);
   const hpPercent = Math.max(0, (player.hp / player.max_hp) * 100);
   const passives = player.passives || [];
+  const relics = player.relics || [];
 
   return (
     <div
@@ -41,6 +43,30 @@ export default function PlayerInfo({ player, isMe, onTarget, isSelected }) {
           </span>
         )}
       </div>
+
+      {relics.length > 0 && (
+        <div className="pi-relics-row">
+          {relics.map((r, i) => {
+            const tmpl = relicTemplates[r.rid] || {};
+            return (
+              <div
+                key={i}
+                className="pi-relic-icon"
+                onMouseEnter={() => setRelicTooltip(r.rid)}
+                onMouseLeave={() => setRelicTooltip(null)}
+              >
+                {r.name?.charAt(0)}
+                {relicTooltip === r.rid && (
+                  <div className="pi-relic-tooltip">
+                    <div className="pi-relic-tooltip-name">{tmpl.name}</div>
+                    <div className="pi-relic-tooltip-desc">{tmpl.description}</div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {showPassives && (
         <div className="ps-overlay" onClick={() => { setShowPassives(false); setExpandedPassive(null); }}>

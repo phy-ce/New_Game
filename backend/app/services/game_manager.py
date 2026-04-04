@@ -17,8 +17,8 @@ def _make_player(name, sid):
     return {
         "sid": sid,
         "name": name,
-        "hp": 100,
-        "max_hp": 100,
+        "hp": 80,
+        "max_hp": 80,
         "energy": 0,
         "max_energy": 4,
         "gold": 0,
@@ -26,6 +26,7 @@ def _make_player(name, sid):
         "strength": 0,
         "damaged_this_turn": False,
         "passives": [],
+        "relics": [],
         "hand": [],
         "deck": [],
         "discard": [],

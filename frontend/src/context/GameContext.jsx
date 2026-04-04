@@ -15,11 +15,13 @@ export function GameProvider({ children }) {
   const [cardTemplates, setCardTemplates] = useState({});
   const [unitTemplates, setUnitTemplates] = useState({});
   const [passiveInfo, setPassiveInfo] = useState({});
+  const [relicTemplates, setRelicTemplates] = useState({});
 
   useEffect(() => {
     fetch('/api/card-templates').then(r => r.json()).then(setCardTemplates);
     fetch('/api/unit-templates').then(r => r.json()).then(setUnitTemplates);
     fetch('/api/passive-info').then(r => r.json()).then(setPassiveInfo);
+    fetch('/api/relic-templates').then(r => r.json()).then(setRelicTemplates);
   }, []);
 
   // Persist to localStorage so refresh can reconnect
@@ -64,6 +66,7 @@ export function GameProvider({ children }) {
     cardTemplates,
     unitTemplates,
     passiveInfo,
+    relicTemplates,
     resetToLobby,
   };
 

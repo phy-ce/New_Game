@@ -252,3 +252,48 @@ def summon(unit_type):
         game["players"][pi]["field"].append(create_unit(unit_type, pi))
 
     return effect
+
+
+def damage_all_enemies(amount):
+    """Deal damage to the opponent player and each of their units (bypasses absorber per unit)."""
+    def effect(game, pi):
+        player = game["players"][pi]
+        opp = game["players"][1 - pi]
+        strength = player.get("strength", 0)
+        total = amount + strength
+        # Hit opponent player (goes through block/absorber)
+        hp_dmg, blocked, abs_name = _apply_damage(opp, total)
+        game["log"].append(
+            f"{player['name']}'s Thunder Strike deals {_damage_log(amount, strength, blocked, abs_name)} to {opp['name']}"
+        )
+        # Hit each enemy unit directly
+        for unit in list(opp["field"]):
+            _damage_unit(game, opp, unit, total)
+            if unit in opp["field"]:
+                game["log"].append(f"Thunder Strike deals {total} to {unit['name']}")
+    return effect
+
+
+
+def destroy_target():
+    """Destroy target enemy unit outright, or deal 15 damage if targeting the player."""
+    def effect(game, pi):
+        target = game.get("_play_target")
+        player = game["players"][pi]
+        opp = game["players"][1 - pi]
+        if not target or target == "opponent":
+            strength = player.get("strength", 0)
+            total = 15 + strength
+            hp_dmg, blocked, abs_name = _apply_damage(opp, total)
+            game["log"].append(
+                f"{player['name']}'s Void Tear deals {_damage_log(15, strength, blocked, abs_name)}"
+            )
+        else:
+            for unit in list(opp["field"]):
+                if unit["id"] == target:
+                    opp["field"].remove(unit)
+                    game["log"].append(f"{player['name']}'s Void Tear destroys {unit['name']}!")
+                    if unit.get("is_champion"):
+                        opp["discard"].append(unit["source_card"])
+                    break
+    return effect

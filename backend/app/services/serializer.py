@@ -28,7 +28,13 @@ def serialize_for_player(game, player_index):
             else None
         ),
         "log": game["log"][-50:],  # Last 50 log entries
-        "market": {cid: {"count": pile["count"]} for cid, pile in game["market"].items()},
+        "market": {
+            cid: {"count": pile["count"]}
+            for cid, pile in game["market"].items()
+            if cid not in ("relics", "rare")
+        },
+        "market_relics": game["market"].get("relics", {}),
+        "market_rare": game["market"].get("rare", []),
         "turn_state": game["turn_state"],
         "pending_choice": game["pending_choice"],
         "me": {
@@ -45,6 +51,7 @@ def serialize_for_player(game, player_index):
             "deck_count": len(me["deck"]),
             "discard": me["discard"],
             "passives": me["passives"],
+            "relics": me["relics"],
         },
         "opponent": {
             "name": opp["name"],
@@ -60,5 +67,6 @@ def serialize_for_player(game, player_index):
             "deck_count": len(opp["deck"]),
             "discard": opp["discard"],
             "passives": opp["passives"],
+            "relics": opp["relics"],
         },
     }

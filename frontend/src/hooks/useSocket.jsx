@@ -113,6 +113,20 @@ export function SocketProvider({ children }) {
     });
   }, []);
 
+  const buyRareCard = useCallback((lobbyCode, slot) => {
+    socketRef.current?.emit('buy_rare_card', {
+      lobby_code: lobbyCode,
+      slot,
+    });
+  }, []);
+
+  const buyRelic = useCallback((lobbyCode, rid) => {
+    socketRef.current?.emit('buy_relic', {
+      lobby_code: lobbyCode,
+      rid,
+    });
+  }, []);
+
   const resolveChoice = useCallback((lobbyCode, choice) => {
     socketRef.current?.emit('resolve_choice', {
       lobby_code: lobbyCode,
@@ -126,7 +140,7 @@ export function SocketProvider({ children }) {
 
   const actions = {
     createGame, joinGame, reconnectGame, startGame,
-    playCard, buyCard, resolveChoice, endTurn,
+    playCard, buyCard, buyRareCard, buyRelic, resolveChoice, endTurn,
   };
 
   return (

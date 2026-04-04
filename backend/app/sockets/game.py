@@ -2,7 +2,7 @@ from flask import request
 from flask_socketio import emit
 from app.services import game_manager
 from app.services.game_logic import (
-    start_game, play_card, buy_card, resolve_choice, end_turn, check_game_over
+    start_game, play_card, buy_card, buy_rare_card, buy_relic, resolve_choice, end_turn, check_game_over
 )
 from app.services.serializer import serialize_for_player
 
@@ -72,6 +72,43 @@ def register_game_handlers(socketio):
         if not success:
             emit('error', {"message": error})
             return
+        broadcast_state(socketio, game)
+
+    @socketio.on('buy_rare_card')
+    def handle_buy_rare(data):
+        code = data.get("lobby_code", "").strip().upper()
+        slot = data.get("slot")
+        game = game_manager.get_game(code)
+        if not game:
+            emit('error', {"message": "Game not found"})
+            return
+        player_idx = game_manager.find_player_index(game, request.sid)
+        if player_idx is None:
+            emit('error', {"message": "Player not found"})
+            return
+        success, error = buy_rare_card(game, player_idx, slot)
+        if not success:
+            emit('error', {"message": error})
+            return
+        broadcast_state(socketio, game)
+
+    @socketio.on('buy_relic')
+    def handle_buy_relic(data):
+        code = data.get("lobby_code", "").strip().upper()
+        rid = data.get("rid")
+        game = game_manager.get_game(code)
+        if not game:
+            emit('error', {"message": "Game not found"})
+            return
+        player_idx = game_manager.find_player_index(game, request.sid)
+        if player_idx is None:
+            emit('error', {"message": "Player not found"})
+            return
+        success, error = buy_relic(game, player_idx, rid)
+        if not success:
+            emit('error', {"message": error})
+            return
+        check_game_over(game)
         broadcast_state(socketio, game)
 
     @socketio.on('resolve_choice')

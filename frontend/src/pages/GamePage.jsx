@@ -14,7 +14,7 @@ import '../styles/GamePage.css';
 
 export default function GamePage() {
   const { gameState, error, resetToLobby, cardTemplates } = useGame();
-  const { playCard, buyCard, resolveChoice, endTurn } = useSocket();
+  const { playCard, buyCard, buyRareCard, buyRelic, resolveChoice, endTurn } = useSocket();
   const [targetingCard, setTargetingCard] = useState(null);
   const [selectedTargetIdx, setSelectedTargetIdx] = useState(0);
   const targetIdxRef = useRef(0);
@@ -116,7 +116,7 @@ export default function GamePage() {
 
   const {
     lobby_code, is_my_turn, winner_name,
-    log, market, turn_state, pending_choice, me, opponent,
+    log, market, market_relics, market_rare, turn_state, pending_choice, me, opponent,
   } = gameState;
 
   const canPlayCards = is_my_turn && status === 'playing' && !pending_choice && !targetingCard;
@@ -216,7 +216,11 @@ export default function GamePage() {
       <div className="right-sidebar">
         <Market
           market={market}
+          marketRelics={market_relics}
+          marketRare={market_rare}
           onBuy={(cid) => buyCard(lobby_code, cid)}
+          onBuyRareCard={(slot) => buyRareCard(lobby_code, slot)}
+          onBuyRelic={(rid) => buyRelic(lobby_code, rid)}
           canBuy={canBuy}
           currentGold={me.gold}
         />
