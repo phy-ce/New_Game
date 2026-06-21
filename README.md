@@ -7,9 +7,9 @@ Two players join the same lobby in their browsers and battle in real time: build
 spend energy to play cards, buy from shared markets, summon units, and reduce your
 opponent's HP to zero.
 
-> ⚠️ **Status:** A personal portfolio project, developed in 2026 and paused in April 2026.
+> ⚠️ **Status:** A two-person hobby project, developed in 2026 and paused in April 2026.
 > It is a working prototype, **not** a production-hardened service (no authentication,
-> in-memory state only). It is meant to demonstrate full-stack and real-time architecture.
+> in-memory state only).
 
 ---
 
