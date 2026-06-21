@@ -186,8 +186,7 @@ metadata: `/api/card-templates`, `/api/unit-templates`, `/api/relic-templates`, 
 ## 👥 Authors & Notes
 
 - Built by **[@phy-ce](https://github.com/phy-ce)** and **[@jather](https://github.com/jather)**.
-- Developed with the help of **[Claude Code](https://claude.com/claude-code)** — repository
-  conventions live in [`CLAUDE.md`](CLAUDE.md).
+- Developed with the help of **[Claude Code](https://claude.com/claude-code)**.
 - Made public on **2026-06-22**.
 
 ---

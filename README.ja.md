@@ -187,7 +187,6 @@ cd ../backend && uv run python run.py
 
 - **[@phy-ce](https://github.com/phy-ce)** と **[@jather](https://github.com/jather)** が開発。
 - **[Claude Code](https://claude.com/claude-code)** を活用して開発しました。
-  リポジトリの規約は [`CLAUDE.md`](CLAUDE.md) を参照してください。
 - 公開日: **2026-06-22**。
 
 ---
